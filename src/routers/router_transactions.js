@@ -9,9 +9,9 @@ const {
 } = require("../controllers/controller_transactions");
 
 router
-  .post("/add/", controllerAddTransaction)
+  .post("/", controllerAddTransaction)
   .get("/", controllerGetAllTransactions)
   .get("/:idTransaction", controllerGetTransactionById)
-  .put("/update/:idTransaction", controllerUpdateDataTransaction)
-  .delete("/delete/:idTransaction", controllerDeleteTransaction);
+  .put("/:idTransaction", controllerUpdateDataTransaction)
+  .delete("/:idTransaction", controllerDeleteTransaction);
 module.exports = router;

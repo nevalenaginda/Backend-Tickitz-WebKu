@@ -1,5 +1,5 @@
 const express = require("express");
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 const cors = require("cors");
 const { envPORT } = require("./src/helpers/env");
 
@@ -10,10 +10,10 @@ const routerTicket = require("./src/routers/router_tickets");
 const routerTransaction = require("./src/routers/router_transactions");
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
 
 // parse application/json
-app.use(bodyParser.json());
+app.use(express.json());
 
 // use cors for enabling CORS
 app.use(cors());
@@ -33,6 +33,14 @@ app.use("/ticket", routerTicket);
 
 // router transaction
 app.use("/transaction", routerTransaction);
+
+// while url not defined
+app.use("/*", (req, res, next) => {
+  res.json({
+    status: 404,
+    message: "URL Not Found",
+  });
+});
 
 app.listen(envPORT || 3000, () => {
   console.log(`app is running on port http://localhost:${envPORT || 3000}`);

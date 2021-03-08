@@ -16,23 +16,24 @@ const {
   badRequest,
 } = require("../helpers/response");
 
+// Read All Ticket
 const controllerGetTickets = async (req, res) => {
   try {
     // sort && methode (ASC, DESC)
-    const sort = req.query.sort ? req.query.sort : ``;
+    const sort = req.query.sort ? req.query.sort : "";
     const methode = req.query.methode ? req.query.methode : "desc";
-    const data = sort ? `ORDER BY ${sort} ${methode}` : ``;
+    const data = sort ? `ORDER BY ${sort} ${methode}` : "";
 
     // searcing name
     const order = req.query.order;
     const item = req.query.item;
-    const search = item ? `WHERE ${order} LIKE '%${item}%'` : ` `;
+    const search = item ? `WHERE ${order} LIKE '%${item}%'` : " ";
 
-    //pagination
+    // pagination
     const page = req.query.page ? req.query.page : 1;
-    const limit = req.query.limit ? req.query.limit : 100;
+    const limit = req.query.limit ? req.query.limit : 20;
     const start = page === 1 ? 0 : (page - 1) * limit;
-    const pages = page ? `LIMIT ${start}, ${limit}` : ``;
+    const pages = page ? `LIMIT ${start}, ${limit}` : "";
 
     // total page
     const totalPage = await modelReadTotalTickets(search);
@@ -46,8 +47,8 @@ const controllerGetTickets = async (req, res) => {
             total: totalPage[0].total,
             totalPage: Math.ceil(totalPage[0].total / limit),
           };
-
-          success(res, "Suceess get data user", pagination, result);
+          console.log("Oops, data not foundSuccess get data ticket");
+          success(res, "Success get data ticket", pagination, result);
         } else {
           console.log("Oops, data not found");
           notFound(res, "Oops, data not found!", []);
@@ -63,15 +64,15 @@ const controllerGetTickets = async (req, res) => {
   }
 };
 
+// Get ticket by id ticket
 const controllerGetTicketById = (req, res) => {
-  // console.log("id tiket = ", req.params.id);
   const idTicket = req.params.idTicket;
   modelGetTicketById(idTicket)
     .then((result) => {
       if (result.length > 0) {
         success(
           res,
-          `Sucess get data ticket with id ticket ${idTicket}`,
+          `Success get data ticket with id ticket ${idTicket}`,
           {},
           result
         );
@@ -85,6 +86,7 @@ const controllerGetTicketById = (req, res) => {
     });
 };
 
+// Update ticket
 const controllerUpdateTicket = async (req, res) => {
   const idTicket = req.params.idTicket;
   const {
@@ -98,27 +100,21 @@ const controllerUpdateTicket = async (req, res) => {
     count,
     date_time,
   } = req.body;
-  try {
-    const checkIdTicket = await modelCheckIdTicket(idTicket);
-    // console.log(checkIdTicket);
-    if (checkIdTicket.length !== 0) {
-      if (
-        id_film === "" ||
-        id_user === "" ||
-        price === "" ||
-        location === "" ||
-        cinema_name === "" ||
-        ticket_status === "" ||
-        seats === "" ||
-        count === "" ||
-        date_time === ""
-      ) {
-        badRequest(
-          res,
-          "Failed to insert ticket. All data cannot be empty",
-          []
-        );
-      } else {
+
+  if (
+    !id_film ||
+    !id_user ||
+    !price ||
+    !location ||
+    !cinema_name ||
+    !ticket_status | !seats | !count ||
+    !date_time
+  ) {
+    badRequest(res, "Failed to insert ticket. All data cannot be empty", []);
+  } else {
+    try {
+      const checkIdTicket = await modelCheckIdTicket(idTicket);
+      if (checkIdTicket.length !== 0) {
         const data = {
           id_film,
           id_user,
@@ -139,28 +135,29 @@ const controllerUpdateTicket = async (req, res) => {
           .catch((err) => {
             console.log(err);
           });
+      } else {
+        badRequest(res, `There are no ticket with Id ${idTicket} `, []);
       }
-    } else {
-      badRequest(res, `There are no ticket with Id ${idTicket} `, []);
+    } catch (error) {
+      console.log(error.message);
+      failed(res, "Internal server error!", error.message);
     }
-  } catch (error) {
-    console.log(error.message);
-    failed(res, "Internal server error!", error.message);
   }
 };
 
+// Delete ticket
 const controllerDeleteTicket = async (req, res) => {
   const idTicket = req.params.idTicket;
   try {
     const checkIdTicket = await modelCheckIdTicket(idTicket);
-    // console.log(checkIdTicket);
     if (checkIdTicket.length !== 0) {
       modelDeleteTicket(idTicket)
         .then((result) => {
-          success(res, `Sucess delete ticket with id: ${idTicket}`, {}, []);
+          success(res, `Success delete ticket with id: ${idTicket}`, {}, []);
         })
         .catch((error) => {
           console.log(error.message);
+          failed(res, "Internal server error!", error.message);
         });
     } else {
       badRequest(res, `There are no ticket with Id ${idTicket} `, []);
@@ -171,6 +168,7 @@ const controllerDeleteTicket = async (req, res) => {
   }
 };
 
+// Insert Ticket
 const controllerInsertTicket = async (req, res) => {
   const {
     id_tiket,
@@ -184,30 +182,24 @@ const controllerInsertTicket = async (req, res) => {
     count,
     date_time,
   } = req.body;
-  // console.log(req.body);
 
-  try {
-    const checkIdTicket = await modelCheckIdTicket(id_tiket);
-    // console.log(checkIdTicket.length);
-    if (checkIdTicket.length === 0) {
-      if (
-        id_tiket === "" ||
-        id_film === "" ||
-        id_user === "" ||
-        price === "" ||
-        location === "" ||
-        cinema_name === "" ||
-        ticket_status === "" ||
-        seats === "" ||
-        count === "" ||
-        date_time === ""
-      ) {
-        badRequest(
-          res,
-          "Failed to insert ticket. All data cannot be empty",
-          []
-        );
-      } else {
+  if (
+    !id_tiket ||
+    !id_film ||
+    !id_user ||
+    !price ||
+    !location ||
+    !cinema_name ||
+    !ticket_status ||
+    !seats ||
+    !count ||
+    !date_time
+  ) {
+    badRequest(res, "Failed to insert ticket. All data cannot be empty", []);
+  } else {
+    try {
+      const checkIdTicket = await modelCheckIdTicket(id_tiket);
+      if (checkIdTicket.length === 0) {
         const data = {
           id_tiket,
           id_film,
@@ -225,18 +217,20 @@ const controllerInsertTicket = async (req, res) => {
 
         modelInsertTicket(data)
           .then((result) => {
+            console.log("Success insert ticket");
             createData(res, "Success insert ticket", data);
           })
-          .catch((err) => {
-            console.log(err);
+          .catch((error) => {
+            console.log(error.message);
+            failed(res, "Internal server error!", error.message);
           });
+      } else {
+        badRequest(res, "Failed to insert ticket. Id ticket has been used", []);
       }
-    } else {
-      badRequest(res, "Failed to insert ticket. Id ticket has been used", []);
+    } catch (error) {
+      console.log(error.message);
+      failed(res, "Internal server error!", error.message);
     }
-  } catch (error) {
-    console.log(error.message);
-    failed(res, "Internal server error!", error.message);
   }
 };
 

@@ -16,6 +16,7 @@ const {
   badRequest,
 } = require("../helpers/response");
 
+//Create transaction
 const controllerAddTransaction = async (req, res) => {
   const {
     id_ticket,
@@ -28,25 +29,21 @@ const controllerAddTransaction = async (req, res) => {
     order_date,
   } = req.body;
 
-  try {
-    const checkIdTransactions = await modelCheckIdTransaction(id_transaction);
-    if (checkIdTransactions.length === 0) {
-      if (
-        id_ticket === "" ||
-        id_movie === "" ||
-        id_user === "" ||
-        id_transaction === "" ||
-        total_payment === "" ||
-        payment_methods === "" ||
-        status_payment === "" ||
-        order_date === ""
-      ) {
-        badRequest(
-          res,
-          "Failed to add transactions. All data cannot be empty",
-          []
-        );
-      } else {
+  if (
+    !id_ticket ||
+    !id_movie ||
+    !id_user ||
+    !id_transaction ||
+    !total_payment ||
+    !payment_methods ||
+    !status_payment ||
+    !order_date
+  ) {
+    badRequest(res, "Failed to add transactions. All data cannot be empty", []);
+  } else {
+    try {
+      const checkIdTransactions = await modelCheckIdTransaction(id_transaction);
+      if (checkIdTransactions.length === 0) {
         const data = {
           id_ticket,
           id_movie,
@@ -67,37 +64,38 @@ const controllerAddTransaction = async (req, res) => {
             console.log(error.message);
             failed(res, "Internal server error!", error.message);
           });
+      } else {
+        badRequest(
+          res,
+          "Failed to add Transaction. Id transaction has been used",
+          []
+        );
       }
-    } else {
-      badRequest(
-        res,
-        "Failed to add Transaction. Id transaction has been used",
-        []
-      );
+    } catch (error) {
+      console.log(error.message);
+      failed(res, "Internal server error!", error.message);
     }
-  } catch (error) {
-    console.log(error.message);
-    failed(res, "Internal server error!", error.message);
   }
 };
 
+//Read all transaction
 const controllerGetAllTransactions = async (req, res) => {
   try {
     // sort && methode (ASC, DESC)
-    const sort = req.query.sort ? req.query.sort : ``;
+    const sort = req.query.sort ? req.query.sort : "";
     const methode = req.query.methode ? req.query.methode : "desc";
-    const data = sort ? `ORDER BY ${sort} ${methode}` : ``;
+    const data = sort ? `ORDER BY ${sort} ${methode}` : "";
 
-    // searcing name
+    // searcing
     const order = req.query.order;
     const item = req.query.item;
-    const search = item ? `WHERE ${order} LIKE '%${item}%'` : ` `;
+    const search = item ? `WHERE ${order} LIKE '%${item}%'` : " ";
 
-    //pagination
+    // pagination
     const page = req.query.page ? req.query.page : 1;
-    const limit = req.query.limit ? req.query.limit : 100;
+    const limit = req.query.limit ? req.query.limit : 20;
     const start = page === 1 ? 0 : (page - 1) * limit;
-    const pages = page ? `LIMIT ${start}, ${limit}` : ``;
+    const pages = page ? `LIMIT ${start}, ${limit}` : "";
 
     // total page
     const totalPage = await modelReadTotalTransactions(search);
@@ -129,6 +127,7 @@ const controllerGetAllTransactions = async (req, res) => {
   }
 };
 
+//Read transaction by Id
 const controllerGetTransactionById = (req, res) => {
   const idTransaction = req.params.idTransaction;
   modelGetTransactionById(idTransaction)
@@ -161,25 +160,21 @@ const controllerUpdateDataTransaction = async (req, res) => {
     status_payment,
     order_date,
   } = req.body;
-  try {
-    const checkIdTransaction = await modelCheckIdTransaction(idTransaction);
-    // console.log(checkIdTicket);
-    if (checkIdTransaction.length !== 0) {
-      if (
-        id_ticket === "" ||
-        id_movie === "" ||
-        id_user === "" ||
-        total_payment === "" ||
-        payment_methods === "" ||
-        status_payment === "" ||
-        order_date === ""
-      ) {
-        badRequest(
-          res,
-          "Failed to insert ticket. All data cannot be empty",
-          []
-        );
-      } else {
+
+  if (
+    !id_ticket ||
+    !id_movie ||
+    !id_user ||
+    !total_payment ||
+    !payment_methods ||
+    !status_payment ||
+    !order_date
+  ) {
+    badRequest(res, "Failed to insert ticket. All data cannot be empty", []);
+  } else {
+    try {
+      const checkIdTransaction = await modelCheckIdTransaction(idTransaction);
+      if (checkIdTransaction.length !== 0) {
         const data = {
           id_ticket,
           id_movie,
@@ -195,16 +190,21 @@ const controllerUpdateDataTransaction = async (req, res) => {
           .then((result) => {
             createData(res, "Success update data transaction", data);
           })
-          .catch((err) => {
-            console.log(err);
+          .catch((error) => {
+            console.log(error.message);
+            failed(res, "Internal server error!", error.message);
           });
+      } else {
+        badRequest(
+          res,
+          `There are no transaction with Id ${idTransaction} `,
+          []
+        );
       }
-    } else {
-      badRequest(res, `There are no transaction with Id ${idTransaction} `, []);
+    } catch (error) {
+      console.log(error.message);
+      failed(res, "Internal server error!", error.message);
     }
-  } catch (error) {
-    console.log(error.message);
-    failed(res, "Internal server error!", error.message);
   }
 };
 
@@ -225,6 +225,7 @@ const controllerDeleteTransaction = async (req, res) => {
         })
         .catch((error) => {
           console.log(error.message);
+          failed(res, "Internal server error!", error.message);
         });
     } else {
       badRequest(res, `There are no transaction with Id ${idTransaction} `, []);

@@ -12,6 +12,6 @@ router
   .post("/register", controllerAddUser)
   .get("/", controllerGetAllUsers)
   .get("/:userId", controllerGetUserById)
-  .put("/update/:userId", controllerUpdateDataUser)
-  .delete("/delete/:userId", controllerDeleteUser);
+  .put("/:userId", controllerUpdateDataUser)
+  .delete("/:userId", controllerDeleteUser);
 module.exports = router;

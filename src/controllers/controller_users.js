@@ -17,7 +17,7 @@ const {
   badRequest,
 } = require("../helpers/response");
 
-//controller add user
+//Add user
 const controllerAddUser = async (req, res) => {
   const {
     id_user,
@@ -27,22 +27,21 @@ const controllerAddUser = async (req, res) => {
     password,
     phone_number,
   } = req.body;
-  try {
-    checkEmail = await modelCheckEmail(email);
-    console.log("email", checkEmail.length);
-    checkIdUser = await modelCheckIdUser(id_user);
-    console.log("id", checkIdUser.length);
-    if (checkEmail.length === 0 && checkIdUser.length === 0) {
-      if (
-        id_user === "" ||
-        full_name === "" ||
-        gender === "" ||
-        email === "" ||
-        password === "" ||
-        phone_number === ""
-      ) {
-        badRequest(res, "Failed to register. All data cannot be empty", []);
-      } else {
+
+  if (
+    !id_user ||
+    !full_name ||
+    !gender ||
+    !email ||
+    !password ||
+    !phone_number
+  ) {
+    badRequest(res, "Failed to register. All data cannot be empty", []);
+  } else {
+    try {
+      checkEmail = await modelCheckEmail(email);
+      checkIdUser = await modelCheckIdUser(id_user);
+      if (checkEmail.length === 0 && checkIdUser.length === 0) {
         const data = {
           id_user,
           full_name,
@@ -61,33 +60,33 @@ const controllerAddUser = async (req, res) => {
             console.log(err.message);
             failed(res, "Internal server error!", err.message);
           });
+      } else {
+        badRequest(res, "Failed to register. Email or id has been used", []);
       }
-    } else {
-      badRequest(res, "Failed to register. Email or id has been used", []);
+    } catch (error) {
+      console.log(error.message);
+      failed(res, "Internal server error!", error.message);
     }
-  } catch (error) {
-    console.log(error.message);
-    failed(res, "Internal server error!", error.message);
   }
 };
 
-//Get all users
+// Read all users
 const controllerGetAllUsers = async (req, res) => {
   try {
     // searcing name
     const name = req.query.name;
-    const search = name ? `WHERE full_name LIKE '%${name}%'` : ` `;
+    const search = name ? `WHERE full_name LIKE '%${name}%'` : " ";
 
     // order && metode (ASC, DESC)
-    const order = req.query.order ? req.query.order : ``;
+    const order = req.query.order ? req.query.order : "";
     const methode = req.query.methode ? req.query.methode : "asc";
-    const data = order ? `ORDER BY ${order} ${methode}` : ``;
+    const data = order ? `ORDER BY ${order} ${methode}` : "";
 
-    //pagination
+    // pagination
     const page = req.query.page ? req.query.page : 1;
-    const limit = req.query.limit ? req.query.limit : 100;
+    const limit = req.query.limit ? req.query.limit : 20;
     const start = page === 1 ? 0 : (page - 1) * limit;
-    const pages = page ? `LIMIT ${start}, ${limit}` : ``;
+    const pages = page ? `LIMIT ${start}, ${limit}` : "";
 
     // total page
     const totalPage = await modelReadTotalUsers(search);
@@ -118,6 +117,7 @@ const controllerGetAllUsers = async (req, res) => {
   }
 };
 
+//Read user by id
 const controllerGetUserById = (req, res) => {
   const UserId = req.params.userId;
   modelGetUserById(UserId)
@@ -137,36 +137,40 @@ const controllerGetUserById = (req, res) => {
 const controllerUpdateDataUser = async (req, res) => {
   const userId = req.params.userId;
   const { full_name, gender, email, password, phone_number } = req.body;
+  if (!full_name || !gender || !email || !password || !phone_number) {
+    badRequest(res, "Failed to update data user. All data cannot be empty", []);
+  } else {
+    try {
+      checkIdUser = await modelCheckIdUser(userId);
 
-  try {
-    checkIdUser = await modelCheckIdUser(userId);
-
-    if (checkIdUser.length !== 0) {
-      const data = {
-        full_name,
-        gender,
-        email,
-        password,
-        phone_number,
-        updated_at: new Date(),
-      };
-      modelUpdateDataUser(userId, data)
-        .then((result) => {
-          success(res, `Sucess update data user with id ${userId}`, {}, data);
-        })
-        .catch((error) => {
-          console.log(error.message);
-          failed(res, "Internal server error!", error.message);
-        });
-    } else {
-      badRequest(res, `There are no user with Id ${userId} `, []);
+      if (checkIdUser.length !== 0) {
+        const data = {
+          full_name,
+          gender,
+          email,
+          password,
+          phone_number,
+          updated_at: new Date(),
+        };
+        modelUpdateDataUser(userId, data)
+          .then((result) => {
+            success(res, `Sucess update data user with id ${userId}`, {}, data);
+          })
+          .catch((error) => {
+            console.log(error.message);
+            failed(res, "Internal server error!", error.message);
+          });
+      } else {
+        badRequest(res, `There are no user with Id ${userId} `, []);
+      }
+    } catch (error) {
+      console.log(error.message);
+      failed(res, "Internal server error!", error.message);
     }
-  } catch (error) {
-    console.log(error.message);
-    failed(res, "Internal server error!", error.message);
   }
 };
 
+//Delete User
 const controllerDeleteUser = async (req, res) => {
   const userId = req.params.userId;
   try {

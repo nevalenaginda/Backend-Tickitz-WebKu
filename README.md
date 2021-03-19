@@ -56,4 +56,5 @@ Kemudian ketikan text berikut
 "npm run start" //untuk menjalankan nodemon cek di file package.json
 ```
 Sebelum menjalankan project ini pastikan telah mengaktifkan module Apacahe dan MySql di XAMPP
+
 Dokumentasi Postman untuk project ini dapat dilihat <a href="https://www.getpostman.com/collections/431fda2cbf8cbe0374dc">disini</a> 

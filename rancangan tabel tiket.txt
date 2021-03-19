@@ -1,0 +1,52 @@
+user
+-query mencari user berdasar nama
+`SELECT * FROM tb_users WHERE full_name like '%$(name)%'`
+
+-query mencari user by email
+`SELECT * FROM tb_users WHERE email like '${email}'`
+
+-query pagination user
+`SELECT * FROM tb_users LIMIT ${start}, ${limit}`
+
+
+-query di model
+`SELECT * FROM tb_users ${search} ${sorted} ${pages}`
+
+-query read total data/ rows
+SELECT COUNT(*) FROM tb_users WHERE full_name like '%a%'
+
+
+
+ticket
+-query mendapatkan tiket terbaru
+SELECT * FROM `tb_tickets` ORDER BY date_time DESC
+
+-query mendapatkan tiket baru yang tanggalnya lebih besar dari hari ini
+SELECT * FROM `tb_tickets` WHERE DATE(date_time) > DATE(now())
+
+-query join mendapatkan tb_ticket dengan tb_movies
+SELECT * FROM tb_tickets INNER JOIN tb_movies ON tb_tickets.id_film = tb_movies.id_movie
+
+
+-query inner join tb_movies dan tickets
+SELECT tb_tickets.id_tiket, tb_tickets.id_user, tb_movies.movie_title, tb_tickets.price ,tb_tickets.location, tb_tickets.cinema_name, tb_tickets.ticket_status, tb_tickets.seats, tb_tickets.count, tb_tickets.date_time, tb_tickets.updated_at, tb_tickets.created_at FROM tb_tickets INNER JOIN tb_movies ON tb_tickets.id_film = tb_movies.id_movie
+
+-query join tiga tabel ticket, user, movie
+SELECT tb_tickets.id_tiket, tb_users.full_name, tb_users.email, tb_movies.movie_title, tb_tickets.price ,tb_tickets.location, tb_tickets.cinema_name, tb_tickets.ticket_status, tb_tickets.seats, tb_tickets.count, tb_tickets.date_time  AS date_time_movies, tb_tickets.updated_at, tb_tickets.created_at
+FROM ((tb_tickets 
+INNER JOIN tb_movies
+ON tb_tickets.id_film = tb_movies.id_movie)
+INNER JOIN tb_users ON tb_tickets.id_user = tb_users.id_user)
+
+-query ticket cari lokasi dan urutkan waktu
+SELECT tb_tickets.id_tiket, tb_users.full_name, tb_users.email, tb_movies.movie_title, tb_tickets.price ,tb_tickets.location, tb_tickets.cinema_name, tb_tickets.ticket_status, tb_tickets.seats, tb_tickets.count, tb_tickets.date_time AS date_time_movies, tb_tickets.updated_at, tb_tickets.created_at FROM ((tb_tickets INNER JOIN tb_movies ON tb_tickets.id_film = tb_movies.id_movie) INNER JOIN tb_users ON tb_tickets.id_user = tb_users.id_user) WHERE location like '%purwokerto%' ORDER BY date_time DESC
+
+transaction 
+-query join 4 tabel transaction, movies, user, ticket
+SELECT tb_transactions.id_transaction, tb_tickets.id_tiket, tb_users.full_name, tb_users.email, tb_movies.movie_title, tb_tickets.price ,tb_tickets.location, tb_tickets.cinema_name, tb_tickets.ticket_status, tb_tickets.seats, tb_tickets.count, tb_tickets.date_time AS date_time_movies, tb_transactions.total_payment, tb_transactions.payment_methods, tb_transactions.status_payment, tb_transactions.created_at, tb_transactions.updated_at FROM (((tb_transactions INNER JOIN tb_movies ON tb_transactions.id_movie= tb_movies.id_movie) INNER JOIN tb_users ON tb_transactions.id_user = tb_users.id_user) INNER JOIN tb_tickets ON tb_transactions.id_ticket = tb_tickets.id_tiket)
+
+
+
+
+-insert data ke databse
+INSERT INTO `tb_movies` (`id_movie`, `image`, `movie_title`, `category`, `duration_movie`, `directed_by`, `casts`, `synopsis`, `release_date`, `created_at`, `updated_at`) VALUES (NULL, 'https://upload.wikimedia.org/wikipedia/en/c/c2/TrialChicago7poster.jpeg', 'The Trial of the Chicago 7', 'Crime, Drama', '2 hours 10 minutes', 'Aaron Sorkin ', 'Eddie Redmayne, Sacha Baron Cohen, Alex Sharp, etc.', 'What was intended to be a peaceful protest at the 1968 Democratic National Convention turned into a violent clash with police and the National Guard. The organizers of the protest—including Abbie Hoffman, Jerry Rubin, Tom Hayden and Bobby Seale—were charged with conspiracy to incite a riot and the trial that followed was one of the most notorious in history. Written and directed by Aaron Sorkin, the film stars Sacha Baron Cohen, Joseph Gordon-Levitt, Frank Langella, Eddie Redmayne, Mark Rylance, and Jeremy Strong. ', '2021-03-17', current_timestamp(), current_timestamp());

@@ -16,80 +16,61 @@ const {
   badRequest,
 } = require("../helpers/response");
 
-//Create transaction
+// Create transaction
 const controllerAddTransaction = async (req, res) => {
   const {
     id_ticket,
     id_movie,
     id_user,
-    id_transaction,
     total_payment,
     payment_methods,
     status_payment,
-    order_date,
   } = req.body;
 
   if (
     !id_ticket ||
     !id_movie ||
     !id_user ||
-    !id_transaction ||
     !total_payment ||
     !payment_methods ||
-    !status_payment ||
-    !order_date
+    !status_payment
   ) {
     badRequest(res, "Failed to add transactions. All data cannot be empty", []);
   } else {
-    try {
-      const checkIdTransactions = await modelCheckIdTransaction(id_transaction);
-      if (checkIdTransactions.length === 0) {
-        const data = {
-          id_ticket,
-          id_movie,
-          id_user,
-          id_transaction,
-          total_payment,
-          payment_methods,
-          status_payment,
-          order_date,
-          created_at: new Date(),
-          updated_at: new Date(),
-        };
-        modelAddTransaction(data)
-          .then((result) => {
-            createData(res, "Success add data transactions", data);
-          })
-          .catch((error) => {
-            console.log(error.message);
-            failed(res, "Internal server error!", error.message);
-          });
-      } else {
-        badRequest(
-          res,
-          "Failed to add Transaction. Id transaction has been used",
-          []
-        );
-      }
-    } catch (error) {
-      console.log(error.message);
-      failed(res, "Internal server error!", error.message);
-    }
+    const data = {
+      id_ticket,
+      id_movie,
+      id_user,
+      total_payment,
+      payment_methods,
+      status_payment,
+      created_at: new Date(),
+      updated_at: new Date(),
+    };
+    modelAddTransaction(data)
+      .then((result) => {
+        createData(res, "Success add data transactions", data);
+      })
+      .catch((error) => {
+        console.log(error.message);
+        failed(res, "Internal server error!", error.message);
+      });
   }
 };
 
-//Read all transaction
+// Read all transaction
 const controllerGetAllTransactions = async (req, res) => {
   try {
     // sort && methode (ASC, DESC)
-    const sort = req.query.sort ? req.query.sort : "";
-    const methode = req.query.methode ? req.query.methode : "desc";
-    const data = sort ? `ORDER BY ${sort} ${methode}` : "";
+    const sortby = req.query["sort-by"] ? req.query["sort-by"] : "";
+    const order = req.query.order ? req.query.order : "asc";
+    const data = sortby ? `ORDER BY ${sortby} ${order}` : "";
 
     // searcing
-    const order = req.query.order;
+    const searchby = req.query["search-by"];
     const item = req.query.item;
-    const search = item ? `WHERE ${order} LIKE '%${item}%'` : " ";
+    const search =
+      item && searchby ? `WHERE ${searchby} LIKE '%${item}%'` : " ";
 
     // pagination
     const page = req.query.page ? req.query.page : 1;
@@ -127,7 +108,7 @@ const controllerGetAllTransactions = async (req, res) => {
   }
 };
 
-//Read transaction by Id
+// Read transaction by Id
 const controllerGetTransactionById = (req, res) => {
   const idTransaction = req.params.idTransaction;
   modelGetTransactionById(idTransaction)
@@ -158,7 +139,6 @@ const controllerUpdateDataTransaction = async (req, res) => {
     total_payment,
     payment_methods,
     status_payment,
-    order_date,
   } = req.body;
 
   if (
@@ -167,8 +147,7 @@ const controllerUpdateDataTransaction = async (req, res) => {
     !id_user ||
     !total_payment ||
     !payment_methods ||
-    !status_payment ||
-    !order_date
+    !status_payment
   ) {
     badRequest(res, "Failed to insert ticket. All data cannot be empty", []);
   } else {
@@ -182,7 +161,6 @@ const controllerUpdateDataTransaction = async (req, res) => {
           total_payment,
           payment_methods,
           status_payment,
-          order_date,
           updated_at: new Date(),
         };
 

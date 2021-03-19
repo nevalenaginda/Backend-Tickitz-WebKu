@@ -5,16 +5,16 @@ const success = (res, message, pagination, data) => {
     pagination,
     data
   }
-  res.json(response)
+  res.status(200).json(response)
 }
 
 const createData = (res, message, data) => {
   const response = {
-    status: 200,
+    status: 201,
     message,
     data
   }
-  res.json(response)
+  res.status(201).json(response)
 }
 
 const failed = (res, message, data) => {
@@ -23,7 +23,7 @@ const failed = (res, message, data) => {
     message,
     data
   }
-  res.json(response)
+  res.status(500).json(response)
 }
 
 const notFound = (res, message, data) => {
@@ -32,7 +32,7 @@ const notFound = (res, message, data) => {
     message,
     data
   }
-  res.json(response)
+  res.status(404).json(response)
 }
 
 const badRequest = (res, message, data) => {
@@ -41,7 +41,7 @@ const badRequest = (res, message, data) => {
     message,
     data
   }
-  res.json(response)
+  res.status(400).json(response)
 }
 
 module.exports = {

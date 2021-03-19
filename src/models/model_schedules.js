@@ -1,11 +1,10 @@
 const connection = require("../configs/db");
 
 // Get All User table category
-const modelGetAllUsers = (search, order, pages) => {
-  console.log("search " + search + "order " + order + "pages " + pages);
+const modelGetAllSchedules = (search, order, pages) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT * FROM tb_users ${search} ${order} ${pages}`,
+      `SELECT * FROM tb_schedule_movies ${search} ${order} ${pages}`,
       (err, results) => {
         if (!err) {
           resolve(results);
@@ -18,10 +17,10 @@ const modelGetAllUsers = (search, order, pages) => {
 };
 
 /// / Read all field table user and show pages
-const modelReadTotalUsers = (search) => {
+const modelReadTotalSchedule = (search) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT COUNT(*) as total FROM tb_users ${search} `,
+      `SELECT COUNT(*) as total FROM tb_schedule_movies ${search} `,
       (error, result) => {
         if (!error) {
           resolve(result);
@@ -33,27 +32,10 @@ const modelReadTotalUsers = (search) => {
   });
 };
 
-/// check email
-const modelCheckEmail = (email) => {
+const modelCheckIdSchedule = (idSchedule) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT * FROM tb_users WHERE email like '${email}'`,
-      (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(new Error(error));
-        }
-      }
-    );
-  });
-};
-
-// model check id user
-const modelCheckIdUser = (idUser) => {
-  return new Promise((resolve, reject) => {
-    connection.query(
-      `SELECT id_user FROM tb_users WHERE id_user like ${idUser}`,
+      `SELECT id_schedule FROM tb_schedule_movies WHERE id_schedule like ${idSchedule}`,
       (error, result) => {
         if (!error) {
           resolve(result);
@@ -66,14 +48,16 @@ const modelCheckIdUser = (idUser) => {
 };
 
 // SELECT * FROM `tickets` WHERE id=1
-const modelGetUserById = (idUser) => {
+const modelGetScheduleById = (idSchedule) => {
   return new Promise((resolve, reject) => {
+    // console.log("ini jalan");
     connection.query(
-      "SELECT * FROM tb_users WHERE id_user= ?",
-      idUser,
+      "SELECT * FROM tb_schedule_movies WHERE id_schedule= ?",
+      idSchedule,
       (err, results) => {
         if (!err) {
           resolve(results);
+          console.log(results);
         } else {
           reject(new Error(err));
         }
@@ -82,23 +66,11 @@ const modelGetUserById = (idUser) => {
   });
 };
 
-const modelAddUser = (data) => {
-  return new Promise((resolve, reject) => {
-    connection.query("INSERT INTO tb_users SET ?", data, (err, result) => {
-      if (!err) {
-        resolve(result);
-      } else {
-        reject(new Error(err));
-      }
-    });
-  });
-};
-
-const modelUpdateDataUser = (idUser, data) => {
+const modelAddSchedule = (data) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      "UPDATE tb_users SET ? WHERE id_user = ?",
-      [data, idUser],
+      "INSERT INTO tb_schedule_movies SET ?",
+      data,
       (err, result) => {
         if (!err) {
           resolve(result);
@@ -110,11 +82,27 @@ const modelUpdateDataUser = (idUser, data) => {
   });
 };
 
-const modelDeleteUser = (idUser) => {
+const modelUpdateDataSchedule = (idSchedule, data) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      "DELETE FROM tb_users WHERE id_user = ?",
-      idUser,
+      "UPDATE tb_schedule_movies SET ? WHERE id_schedule = ?",
+      [data, idSchedule],
+      (err, result) => {
+        if (!err) {
+          resolve(result);
+        } else {
+          reject(new Error(err));
+        }
+      }
+    );
+  });
+};
+
+const modelDeleteSchedule = (idSchedule) => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      "DELETE FROM tb_schedule_movies WHERE id_schedule = ?",
+      idSchedule,
       (err, results) => {
         if (!err) {
           resolve(results);
@@ -127,12 +115,11 @@ const modelDeleteUser = (idUser) => {
 };
 
 module.exports = {
-  modelAddUser,
-  modelGetAllUsers,
-  modelUpdateDataUser,
-  modelDeleteUser,
-  modelGetUserById,
-  modelReadTotalUsers,
-  modelCheckIdUser,
-  modelCheckEmail,
+  modelAddSchedule,
+  modelCheckIdSchedule,
+  modelDeleteSchedule,
+  modelGetAllSchedules,
+  modelGetScheduleById,
+  modelReadTotalSchedule,
+  modelUpdateDataSchedule,
 };

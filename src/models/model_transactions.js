@@ -3,7 +3,7 @@ const connection = require("../configs/db");
 const modelGetAllTransactions = (data, search, pages) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT tb_transactions.id_transaction, tb_tickets.id_tiket, tb_users.full_name, tb_users.email, tb_movies.movie_title, tb_tickets.price ,tb_tickets.location, tb_tickets.cinema_name, tb_tickets.ticket_status, tb_tickets.seats, tb_tickets.count, tb_tickets.date_time AS date_time_movies, tb_transactions.total_payment, tb_transactions.payment_methods, tb_transactions.status_payment, tb_transactions.order_date, tb_transactions.created_at, tb_transactions.updated_at FROM (((tb_transactions INNER JOIN tb_movies ON tb_transactions.id_movie= tb_movies.id_movie) INNER JOIN tb_users ON tb_transactions.id_user = tb_users.id_user) INNER JOIN tb_tickets ON tb_transactions.id_ticket = tb_tickets.id_tiket) ${search} ${data} ${pages}`,
+      `SELECT tb_transactions.id_transaction, tb_tickets.id_tiket, tb_users.full_name, tb_users.email, tb_movies.movie_title, tb_tickets.price ,tb_tickets.location, tb_tickets.cinema_name, tb_tickets.ticket_status, tb_tickets.seats, tb_tickets.count, tb_tickets.date_time AS date_time_movies, tb_transactions.total_payment, tb_transactions.payment_methods, tb_transactions.status_payment, tb_transactions.created_at, tb_transactions.updated_at FROM (((tb_transactions INNER JOIN tb_movies ON tb_transactions.id_movie= tb_movies.id_movie) INNER JOIN tb_users ON tb_transactions.id_user = tb_users.id_user) INNER JOIN tb_tickets ON tb_transactions.id_ticket = tb_tickets.id_tiket) ${search} ${data} ${pages}`,
       (err, results) => {
         if (!err) {
           resolve(results);

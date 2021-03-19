@@ -1,11 +1,10 @@
 const connection = require("../configs/db");
 
 // Get All User table category
-const modelGetAllUsers = (search, order, pages) => {
-  console.log("search " + search + "order " + order + "pages " + pages);
+const modelGetAllMovies = (search, order, pages) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT * FROM tb_users ${search} ${order} ${pages}`,
+      `SELECT * FROM tb_movies ${search} ${order} ${pages}`,
       (err, results) => {
         if (!err) {
           resolve(results);
@@ -18,10 +17,10 @@ const modelGetAllUsers = (search, order, pages) => {
 };
 
 /// / Read all field table user and show pages
-const modelReadTotalUsers = (search) => {
+const modelReadTotalMovies = (search) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT COUNT(*) as total FROM tb_users ${search} `,
+      `SELECT COUNT(*) as total FROM tb_movies ${search} `,
       (error, result) => {
         if (!error) {
           resolve(result);
@@ -33,27 +32,10 @@ const modelReadTotalUsers = (search) => {
   });
 };
 
-/// check email
-const modelCheckEmail = (email) => {
+const modelCheckIdMovie = (idMovie) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT * FROM tb_users WHERE email like '${email}'`,
-      (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(new Error(error));
-        }
-      }
-    );
-  });
-};
-
-// model check id user
-const modelCheckIdUser = (idUser) => {
-  return new Promise((resolve, reject) => {
-    connection.query(
-      `SELECT id_user FROM tb_users WHERE id_user like ${idUser}`,
+      `SELECT id_movie FROM tb_movies WHERE id_movie like ${idMovie}`,
       (error, result) => {
         if (!error) {
           resolve(result);
@@ -66,14 +48,16 @@ const modelCheckIdUser = (idUser) => {
 };
 
 // SELECT * FROM `tickets` WHERE id=1
-const modelGetUserById = (idUser) => {
+const modelGetMovieById = (idMovie) => {
   return new Promise((resolve, reject) => {
+    // console.log("ini jalan");
     connection.query(
-      "SELECT * FROM tb_users WHERE id_user= ?",
-      idUser,
+      "SELECT * FROM tb_movies WHERE id_movie= ?",
+      idMovie,
       (err, results) => {
         if (!err) {
           resolve(results);
+          console.log(results);
         } else {
           reject(new Error(err));
         }
@@ -82,9 +66,9 @@ const modelGetUserById = (idUser) => {
   });
 };
 
-const modelAddUser = (data) => {
+const modelAddMovie = (data) => {
   return new Promise((resolve, reject) => {
-    connection.query("INSERT INTO tb_users SET ?", data, (err, result) => {
+    connection.query("INSERT INTO tb_movies SET ?", data, (err, result) => {
       if (!err) {
         resolve(result);
       } else {
@@ -94,11 +78,11 @@ const modelAddUser = (data) => {
   });
 };
 
-const modelUpdateDataUser = (idUser, data) => {
+const modelUpdateDataMovie = (idMovie, data) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      "UPDATE tb_users SET ? WHERE id_user = ?",
-      [data, idUser],
+      "UPDATE tb_movies SET ? WHERE id_movie = ?",
+      [data, idMovie],
       (err, result) => {
         if (!err) {
           resolve(result);
@@ -110,10 +94,10 @@ const modelUpdateDataUser = (idUser, data) => {
   });
 };
 
-const modelDeleteUser = (idUser) => {
+const modelDeleteMovie = (idUser) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      "DELETE FROM tb_users WHERE id_user = ?",
+      "DELETE FROM tb_movies WHERE id_movie = ?",
       idUser,
       (err, results) => {
         if (!err) {
@@ -127,12 +111,11 @@ const modelDeleteUser = (idUser) => {
 };
 
 module.exports = {
-  modelAddUser,
-  modelGetAllUsers,
-  modelUpdateDataUser,
-  modelDeleteUser,
-  modelGetUserById,
-  modelReadTotalUsers,
-  modelCheckIdUser,
-  modelCheckEmail,
+  modelAddMovie,
+  modelGetAllMovies,
+  modelUpdateDataMovie,
+  modelDeleteMovie,
+  modelGetMovieById,
+  modelReadTotalMovies,
+  modelCheckIdMovie,
 };

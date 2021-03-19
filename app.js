@@ -1,13 +1,16 @@
 const express = require("express");
 // const bodyParser = require("body-parser");
 const cors = require("cors");
+const morgan = require("morgan");
+
 const { envPORT } = require("./src/helpers/env");
+const indexRouter = require("./src/routers/index");
 
 const app = express();
 
-const routerUser = require("./src/routers/router_users");
-const routerTicket = require("./src/routers/router_tickets");
-const routerTransaction = require("./src/routers/router_transactions");
+app.listen(envPORT || 3000, () => {
+  console.log(`app is running on port http://localhost:${envPORT || 3000}`);
+});
 
 // parse application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: false }));
@@ -18,6 +21,12 @@ app.use(express.json());
 // use cors for enabling CORS
 app.use(cors());
 
+// use morgan
+app.use(morgan("dev"));
+
+// versioning
+app.use("/v1", indexRouter);
+
 // Set default
 app.get("/", (req, res) => {
   res.json({
@@ -25,23 +34,10 @@ app.get("/", (req, res) => {
   });
 });
 
-// router user
-app.use("/user", routerUser);
-
-// router ticket
-app.use("/ticket", routerTicket);
-
-// router transaction
-app.use("/transaction", routerTransaction);
-
 // while url not defined
 app.use("/*", (req, res, next) => {
-  res.json({
+  res.status(404).json({
     status: 404,
     message: "URL Not Found",
   });
-});
-
-app.listen(envPORT || 3000, () => {
-  console.log(`app is running on port http://localhost:${envPORT || 3000}`);
 });

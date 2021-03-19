@@ -1,4 +1,4 @@
-# Beginner Backend Week 4
+# Intermediate Backend Week 6
 ### Informasi
 
 File ini merupakan contoh pembuatan database CRUD di MySql dengan REST API melalui tools Postman. Project ini disimulasikan dapat create, read, update, dan delete suatu API Tiket Film melalui perintah standar yang ada di Sql yang terintegrasi dengan REST API dan disimulasikan melalui postman.

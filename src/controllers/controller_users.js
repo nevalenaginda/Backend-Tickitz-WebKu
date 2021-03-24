@@ -24,7 +24,6 @@ const { response } = require("../helpers/response");
 // register
 const controllerAddUser = async (req, res) => {
   const { email, password } = req.body;
-  // console.log(req.body);
 
   if (!email || !password) {
     return response(res, [], {}, 401, {
@@ -48,7 +47,6 @@ const controllerAddUser = async (req, res) => {
         const token = jwt.sign({ identify: data }, envJWT);
         modelAddUser(data)
           .then((result) => {
-            // console.log(data.email, token);
             createActivation(data.email, token)
               .then((result) => {
                 sendEmail(data.email, token)
@@ -71,11 +69,6 @@ const controllerAddUser = async (req, res) => {
                   error: err.message,
                 });
               });
-
-            // return response(res, data.email, {}, 200, {
-            //   message: "Registration Success",
-            //   error: null,
-            // });
           })
           .catch((err) => {
             console.log(err.message);
@@ -118,7 +111,6 @@ const controllerLogin = async (req, res) => {
           checkEmail[0].password
         );
         if (checkPass) {
-          console.log(checkEmail);
           if (checkEmail[0].is_verify !== 1) {
             return response(res, [], {}, 401, {
               message:
@@ -236,7 +228,6 @@ const controllerGetAllUsers = async (req, res) => {
 // Read user by id
 const controllerGetUserById = (req, res) => {
   const UserId = req.params.userId;
-  console.log(UserId);
   modelGetUserById(UserId)
     .then((result) => {
       if (result.length > 0) {
@@ -330,7 +321,6 @@ const controllerUpdateDataUser = async (req, res) => {
 // update
 const controllerUpdateDataUser2 = async (req, res) => {
   const userId = req.params.userId;
-  console.log(userId);
   const data = req.body;
   try {
     const checkIdUser = await modelCheckIdUser(userId);
@@ -406,7 +396,6 @@ const controllerSendEmail = async (req, res) => {
     "nevalenaginda10@gmail.com",
     "Activate Account"
   );
-  console.log(resEmail);
   res.json({
     status: "success",
   });

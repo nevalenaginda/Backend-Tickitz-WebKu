@@ -31,7 +31,7 @@ app.use("/img", express.static("./src/uploads"));
 // Set default
 app.get("/", (req, res) => {
   res.json({
-    message: "Welcome to Project CRUD RESTfull API Database Ticket",
+    message: "Welcome to Tickitz Server",
   });
 });
 

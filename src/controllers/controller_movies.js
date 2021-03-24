@@ -12,11 +12,12 @@ const { envPORT } = require("../helpers/env");
 const { response } = require("../helpers/response");
 
 const redisClient = require("../configs/redis");
+// filesystem
+const fs = require("fs");
 
 const setDataRedis = () => {
   modelGetAllMoviesRedis()
     .then((response) => {
-      // console.log(response);
       const data = JSON.stringify(response);
       redisClient.set("dataAllMovies", data);
     })
@@ -75,7 +76,6 @@ const controllerInsertMovie = async (req, res) => {
 
     modelAddMovie(data)
       .then((result) => {
-        console.log("Success insert movie");
         setDataRedis();
         return response(res, [data], {}, 201, {
           message: "Success insert movie.",
@@ -124,13 +124,11 @@ const controllerGetAllMovies = async (req, res) => {
             totalPage: Math.ceil(totalPage[0].total / limit),
           };
           setDataRedis();
-          console.log("Success get data movie");
           return response(res, result, pagination, 200, {
             message: "Success get data movie from server",
             error: null,
           });
         } else {
-          console.log("Oops, data not found");
           return response(res, [], {}, 404, {
             message: "Oops, data not found",
             error: null,
@@ -188,25 +186,62 @@ const controllerUpdateMovie = async (req, res) => {
       data = req.body;
       data.updated_at = new Date();
       const last_image = await modelGetMovieById(idMovie);
-      data.image = req.file
-        ? `http://localhost:${envPORT}/img/${req.file.filename}`
-        : last_image[0].image;
 
-      modelUpdateDataMovie(idMovie, data)
-        .then((result) => {
-          setDataRedis();
-          return response(res, [data], {}, 200, {
-            message: `Succes update data movie with id ${idMovie}`,
-            error: null,
+      if (req.file) {
+        data.image = `http://localhost:${envPORT}/img/${req.file.filename}`;
+        delImage = last_image[0].image.split("/").slice(-1)[0];
+        if (delImage !== "default_poster.jpg") {
+          const locationPath = "./src/uploads/" + delImage;
+          fs.unlinkSync(locationPath);
+          modelUpdateDataMovie(idMovie, data)
+            .then((result) => {
+              setDataRedis();
+              return response(res, [data], {}, 200, {
+                message: `Succes update data movie with id ${idMovie}`,
+                error: null,
+              });
+            })
+            .catch((err) => {
+              console.log(err.message);
+              return response(res, [], {}, 500, {
+                message: "Internal server error!",
+                error: err.message,
+              });
+            });
+        } else {
+          modelUpdateDataMovie(idMovie, data)
+            .then((result) => {
+              setDataRedis();
+              return response(res, [data], {}, 200, {
+                message: `Succes update data movie with id ${idMovie}`,
+                error: null,
+              });
+            })
+            .catch((err) => {
+              console.log(err.message);
+              return response(res, [], {}, 500, {
+                message: "Internal server error!",
+                error: err.message,
+              });
+            });
+        }
+      } else {
+        modelUpdateDataMovie(idMovie, data)
+          .then((result) => {
+            setDataRedis();
+            return response(res, [data], {}, 200, {
+              message: `Succes update data movie with id ${idMovie}`,
+              error: null,
+            });
+          })
+          .catch((err) => {
+            console.log(err.message);
+            return response(res, [], {}, 500, {
+              message: "Internal server error!",
+              error: err.message,
+            });
           });
-        })
-        .catch((err) => {
-          console.log(err.message);
-          return response(res, [], {}, 500, {
-            message: "Internal server error!",
-            error: err.message,
-          });
-        });
+      }
     } else {
       return response(res, [], {}, 404, {
         message: `There are no movie with Id ${idMovie}`,
@@ -228,21 +263,43 @@ const controllerDeleteMovie = async (req, res) => {
   try {
     const checkIdMovie = await modelCheckIdMovie(idMovie);
     if (checkIdMovie.length !== 0) {
-      modelDeleteMovie(idMovie)
-        .then((result) => {
-          setDataRedis();
-          return response(res, [], {}, 200, {
-            message: `Success delete data movie with id ${idMovie}`,
-            error: null,
+      const last_image = await modelGetMovieById(idMovie);
+      delImage = last_image[0].image.split("/").slice(-1)[0];
+      if (delImage !== "default_poster.jpg") {
+        const locationPath = "./src/uploads/" + delImage;
+        fs.unlinkSync(locationPath);
+        modelDeleteMovie(idMovie)
+          .then((result) => {
+            setDataRedis();
+            return response(res, [], {}, 200, {
+              message: `Success delete data movie with id ${idMovie}`,
+              error: null,
+            });
+          })
+          .catch((err) => {
+            console.log(err.message);
+            return response(res, [], {}, 500, {
+              message: "Internal server error!",
+              error: err.message,
+            });
           });
-        })
-        .catch((err) => {
-          console.log(err.message);
-          return response(res, [], {}, 500, {
-            message: "Internal server error!",
-            error: err.message,
+      } else {
+        modelDeleteMovie(idMovie)
+          .then((result) => {
+            setDataRedis();
+            return response(res, [], {}, 200, {
+              message: `Success delete data movie with id ${idMovie}`,
+              error: null,
+            });
+          })
+          .catch((err) => {
+            console.log(err.message);
+            return response(res, [], {}, 500, {
+              message: "Internal server error!",
+              error: err.message,
+            });
           });
-        });
+      }
     } else {
       return response(res, [], {}, 401, {
         message: `There are no movie with Id ${idMovie}`,

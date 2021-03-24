@@ -1,0 +1,691 @@
+{
+	"info": {
+		"_postman_id": "b83a2cd6-dcbd-43a3-b1b0-09ca72d47fe4",
+		"name": "Rest Full API Tickitz",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Tickets",
+			"item": [
+				{
+					"name": "Create",
+					"item": [
+						{
+							"name": "Insert New Ticket",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n \"id_tiket\": 11,\r\n            \"id_user\": 4,\r\n            \"id_film\": 2,\r\n            \"price\": \"50000\",\r\n            \"location\": \"Semarang\",\r\n            \"cinema_name\": \"ebv.id\",\r\n            \"ticket_status\": \"Ticket In Active\",\r\n            \"seats\": \"3B\",\r\n            \"count\": 1,\r\n            \"date_time\": \"2021-03-12T06:30:00.000Z\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:5000/ticket/",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"ticket",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Read",
+					"item": [
+						{
+							"name": "Get All Tickets",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/ticket/",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"ticket",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Ticket By Id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/ticket/10",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"ticket",
+										"10"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Ticket By Movie Title",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/ticket?order=movie_title&item=john&sort=date_time",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"ticket"
+									],
+									"query": [
+										{
+											"key": "order",
+											"value": "movie_title"
+										},
+										{
+											"key": "item",
+											"value": "john"
+										},
+										{
+											"key": "sort",
+											"value": "date_time"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Ticket By Location And Sort By Date Time",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/ticket?sort=date_time&methode=desc&order=location&item=semarang",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"ticket"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "date_time"
+										},
+										{
+											"key": "methode",
+											"value": "desc"
+										},
+										{
+											"key": "order",
+											"value": "location"
+										},
+										{
+											"key": "item",
+											"value": "semarang"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Tickets Use Pagination",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/ticket?page=2&limit=2&order=location&item=purwokerto",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"ticket"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "2"
+										},
+										{
+											"key": "limit",
+											"value": "2"
+										},
+										{
+											"key": "order",
+											"value": "location"
+										},
+										{
+											"key": "item",
+											"value": "purwokerto"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Acces Not Defined End Point",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/schedule",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"schedule"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Update",
+					"item": [
+						{
+							"name": "Update Data Ticket",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n            \"id_user\": 4,\r\n            \"id_film\": 2,\r\n            \"price\": \"50000\",\r\n            \"location\": \"Semarang\",\r\n            \"cinema_name\": \"ebv.id\",\r\n            \"ticket_status\": \"Ticket In Active\",\r\n            \"seats\": \"3B\\r\\n\",\r\n            \"count\": 1,\r\n            \"date_time\": \"2021-03-11T16:30:00.000Z\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:5000/ticket/11",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"ticket",
+										"11"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Delete",
+					"item": [
+						{
+							"name": "Delete Ticket By Id Ticket",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/ticket/11",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"ticket",
+										"11"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create",
+					"item": [
+						{
+							"name": "Add User",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\r\n    {\"id_user\": \"11\" ,\r\n    \"full_name\": \"Reyhan Issatyadi\",\r\n    \"gender\": \"male\",\r\n    \"email\": \"reyhanisme@gmaill.com\",\r\n    \"password\": \"Nandauya8912\",\r\n    \"phone_number\": \"081756608891\"\r\n   }\r\n   ",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:5000/user/register",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user",
+										"register"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Read",
+					"item": [
+						{
+							"name": "Get All Users",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/user/",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User By Id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/user/6",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All User Use Pagination",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/user?page=1&limit=2",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User By Name",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/user?name=dewi",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "dewi"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Data Using Item And Sort Methode",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": null
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Update",
+					"item": [
+						{
+							"name": "Update Data User By Id User",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "\r\n    {\r\n    \"full_name\": \"Reyhan Issatyadi Darmawann\",\r\n    \"gender\": \"male\",\r\n    \"email\": \"reyhanisme@gmail.com\",\r\n    \"password\": \"Nandauya8912\",\r\n    \"phone_number\": \"081756608891\"\r\n   }\r\n   ",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:5000/user/11",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user",
+										"11"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Delete",
+					"item": [
+						{
+							"name": "Delete Data User By Id User",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/user/12",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"user",
+										"12"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "Create",
+					"item": [
+						{
+							"name": "add Transaction",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"id_ticket\": 11,\r\n    \"id_movie\" : 2,\r\n    \"id_user\" : 11,\r\n    \"id_transaction\":11,\r\n    \"total_payment\":\"50000\",\r\n    \"payment_methods\": \"BCA\",\r\n    \"status_payment\": \"paid\",\r\n    \"order_date\": \"2021-03-12T06:30:00.000Z\"}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:5000/transaction/add/",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"transaction",
+										"add",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Read",
+					"item": [
+						{
+							"name": "Get All Transactions",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/transaction/",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"transaction",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Transaction By Id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/transaction/11",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"transaction",
+										"11"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Transaction Use Paginations",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/transaction?page=2&limit=5",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"transaction"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "2"
+										},
+										{
+											"key": "limit",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Sort Transaction By Date",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/transaction?sort=order_date&methode=desc",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"transaction"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "order_date"
+										},
+										{
+											"key": "methode",
+											"value": "desc"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Transaction By Movie Name",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/transaction?order=movie_title&item=john",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"transaction"
+									],
+									"query": [
+										{
+											"key": "order",
+											"value": "movie_title"
+										},
+										{
+											"key": "item",
+											"value": "john"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Update",
+					"item": [
+						{
+							"name": "Update Data Transaction",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"id_ticket\": 11,\r\n    \"id_movie\" : 2,\r\n    \"id_user\" : 11,\r\n    \"total_payment\":\"50000\",\r\n    \"payment_methods\": \"BCA\",\r\n    \"status_payment\": \"Paid\",\r\n    \"order_date\": \"2021-03-12T06:30:00.000Z\"}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:5000/transaction/11",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"transaction",
+										"11"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Delete",
+					"item": [
+						{
+							"name": "Delete Transaction By Id Transaction",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:5000/transaction/11",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"transaction",
+										"11"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

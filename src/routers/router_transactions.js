@@ -1,6 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const {
+  authentification,
+  authorizationAdmin,
+  authorizationUser
+} = require('../middlewares/auth')
+const {
   controllerAddTransaction,
   controllerGetAllTransactions,
   controllerGetTransactionById,
@@ -9,9 +14,9 @@ const {
 } = require('../controllers/controller_transactions')
 
 router
-  .post('/', controllerAddTransaction)
-  .get('/', controllerGetAllTransactions)
-  .get('/:idTransaction', controllerGetTransactionById)
-  .put('/:idTransaction', controllerUpdateDataTransaction)
-  .delete('/:idTransaction', controllerDeleteTransaction)
+  .post('/', authentification, controllerAddTransaction)
+  .get('/', authentification, controllerGetAllTransactions)
+  .get('/:idTransaction', authentification, controllerGetTransactionById)
+  .patch('/:idTransaction', authentification, controllerUpdateDataTransaction)
+  .delete('/:idTransaction', authentification, controllerDeleteTransaction)
 module.exports = router

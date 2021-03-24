@@ -7,4 +7,6 @@ module.exports = {
   envDBPASS: process.env.DBPASS,
   envDB: process.env.DB,
   envJWT: process.env.JWTCode,
+  envEmail: process.env.EMAIL,
+  envEmailPass: process.env.PASSWORD,
 };

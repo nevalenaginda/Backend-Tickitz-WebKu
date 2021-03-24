@@ -26,7 +26,8 @@ app.use(morgan("dev"));
 
 // versioning
 app.use("/v1", indexRouter);
-
+// static router
+app.use("/img", express.static("./src/uploads"));
 // Set default
 app.get("/", (req, res) => {
   res.json({
@@ -35,7 +36,7 @@ app.get("/", (req, res) => {
 });
 
 // while url not defined
-app.use("/*", (req, res, next) => {
+app.use("/*", (req, res) => {
   res.status(404).json({
     status: 404,
     message: "URL Not Found",

@@ -1,45 +1,51 @@
 const {
-  modelAddSchedule,
-  modelCheckIdSchedule,
-  modelDeleteSchedule,
-  modelGetAllSchedules,
-  modelGetScheduleById,
-  modelReadTotalSchedule,
-  modelUpdateDataSchedule
-} = require('../models/model_schedules')
-
+  modelAddCinema,
+  modelReadTotalCinemas,
+  modelGetAllCinemas,
+  modelGetCinemaById,
+  modelUpdateDataCinema,
+  modelCheckIdCinema,
+  modelDeleteCinema
+} = require('../models/model_cinemas')
 const { response } = require('../helpers/response')
+const { envPORT } = require('../helpers/env')
 
-// create
-const controllerInsertSchedule = async (req, res) => {
-  const { id_movie, id_cinema, playing_time, playing_date, price } = req.body
+// Insert Movie
+const controllerAddCinema = async (req, res) => {
+  const { cinema_name, address_cinema, city_cinema } = req.body
+  console.log(req.body)
 
-  if (!id_movie || !id_cinema || !playing_time || !playing_date || !price) {
+  if (!cinema_name || !address_cinema || !city_cinema) {
+    // res, data, pagination, status, message
     return response(res, [], {}, 401, {
-      message: 'Failed to  add data schedule. All data cannot be empty.',
+      message: 'Failed to  add data cinema. All data cannot be empty.',
       error: null
     })
   } else {
+    const logo_cinema = req.file
+      ? `http://localhost:${envPORT}/img/${req.file.filename}`
+      : `http://localhost:${envPORT}/img/default_cinema.png`
     const data = {
-      id_movie,
-      id_cinema,
-      playing_time,
-      playing_date,
-      price,
+      cinema_name,
+      address_cinema,
+      city_cinema,
+      logo_cinema,
       created_at: new Date(),
       updated_at: new Date()
     }
 
-    modelAddSchedule(data)
+    modelAddCinema(data)
       .then((result) => {
-        console.log('Success insert schedule')
+        console.log('Success add cinema.')
+        // res, data, pagination, status, message
         return response(res, [data], {}, 201, {
-          message: 'Success insert seat.',
+          message: 'Success add cinema.',
           error: null
         })
       })
       .catch((err) => {
         console.log(err.message)
+        // res, data, pagination, status, message
         return response(res, [], {}, 500, {
           message: 'Internal server error',
           error: err.message
@@ -48,8 +54,8 @@ const controllerInsertSchedule = async (req, res) => {
   }
 }
 
-// Read All schedule
-const controllerGetAllSchedules = async (req, res) => {
+// Read All Cinemas
+const controllerGetAllCinemas = async (req, res) => {
   try {
     // sort && methode (ASC, DESC)
     const sortby = req.query['sort-by'] ? req.query['sort-by'] : ''
@@ -68,9 +74,9 @@ const controllerGetAllSchedules = async (req, res) => {
     const pages = page ? `LIMIT ${start}, ${limit}` : ''
 
     // total page
-    const totalPage = await modelReadTotalSchedule(search)
+    const totalPage = await modelReadTotalCinemas(search)
 
-    modelGetAllSchedules(data, search, pages)
+    modelGetAllCinemas(data, search, pages)
       .then((result) => {
         if (result.length > 0) {
           const pagination = {
@@ -79,9 +85,9 @@ const controllerGetAllSchedules = async (req, res) => {
             total: totalPage[0].total,
             totalPage: Math.ceil(totalPage[0].total / limit)
           }
-          console.log('Success get data schedule')
+          console.log('Success get data cinemas')
           return response(res, result, pagination, 200, {
-            message: 'Success get data schedule',
+            message: 'Success get data cinemas',
             error: null
           })
         } else {
@@ -108,14 +114,15 @@ const controllerGetAllSchedules = async (req, res) => {
   }
 }
 
-// Read schedule by id schedule
-const controllerGetSceheduleById = (req, res) => {
-  const idSchedule = req.params.idSchedule
-  modelGetScheduleById(idSchedule)
+// Get Cinema by id ticket
+const controllerGetCinemaById = (req, res) => {
+  const idCinema = req.params.idCinema
+  modelGetCinemaById(idCinema)
     .then((result) => {
       if (result.length > 0) {
+        // res, data, pagination, status, message
         return response(res, result, {}, 200, {
-          message: `Success get data schedule with id ${idSchedule}`,
+          message: `Success get data cinema with id ${idCinema}`,
           error: null
         })
       } else {
@@ -134,24 +141,28 @@ const controllerGetSceheduleById = (req, res) => {
     })
 }
 
-// Update schedule
-const controllerUpdateSchedule = async (req, res) => {
-  const idSchedule = req.params.idSchedule
+// Update movie
+const controllerUpdateCinema = async (req, res) => {
+  const idCinema = req.params.idCinema
   try {
-    const checkIdSchedule = await modelCheckIdSchedule(idSchedule)
-    if (checkIdSchedule.length !== 0) {
+    const checkIdCinema = await modelCheckIdCinema(idCinema)
+    if (checkIdCinema.length !== 0) {
       data = req.body
       data.updated_at = new Date()
+      const last_logo = await modelGetCinemaById(idCinema)
+      data.logo_cinema = req.file
+        ? `http://localhost:${envPORT}/img/${req.file.filename}`
+        : last_logo[0].logo_cinema
 
-      modelUpdateDataSchedule(idSchedule, data)
+      modelUpdateDataCinema(idCinema, data)
         .then((result) => {
           return response(res, [data], {}, 200, {
-            message: `Succes update data schedule with id ${idSchedule}`,
+            message: `Succes update data cinema with id ${idCinema}`,
             error: null
           })
         })
         .catch((err) => {
-          console.log(err.message)
+          console.log(err)
           return response(res, [], {}, 500, {
             message: 'Internal server error!',
             error: err.message
@@ -159,7 +170,7 @@ const controllerUpdateSchedule = async (req, res) => {
         })
     } else {
       return response(res, [], {}, 404, {
-        message: `There are no schedule with Id ${idSchedule}`,
+        message: `There are no cinema with Id ${idCinema}`,
         error: null
       })
     }
@@ -172,16 +183,16 @@ const controllerUpdateSchedule = async (req, res) => {
   }
 }
 
-// Delete
-const controllerDeleteSchedule = async (req, res) => {
-  const idSchedule = req.params.idSchedule
+// Delete cinema
+const controllerDeleteCinema = async (req, res) => {
+  const idCinema = req.params.idCinema
   try {
-    const checkIdSchedule = await modelCheckIdSchedule(idSchedule)
-    if (checkIdSchedule.length !== 0) {
-      modelDeleteSchedule(idSchedule)
+    const checkIdCinema = await modelCheckIdCinema(idCinema)
+    if (checkIdCinema.length !== 0) {
+      modelDeleteCinema(idCinema)
         .then((result) => {
           return response(res, [], {}, 200, {
-            message: `Succes delete data schedule with id ${idSchedule}`,
+            message: `Succes delete data cinema with id ${idCinema}`,
             error: null
           })
         })
@@ -194,7 +205,7 @@ const controllerDeleteSchedule = async (req, res) => {
         })
     } else {
       return response(res, [], {}, 404, {
-        message: `There are no schedule with Id ${idSchedule}`,
+        message: `There are no cinema with Id ${idCinema}`,
         error: null
       })
     }
@@ -208,9 +219,9 @@ const controllerDeleteSchedule = async (req, res) => {
 }
 
 module.exports = {
-  controllerDeleteSchedule,
-  controllerGetAllSchedules,
-  controllerGetSceheduleById,
-  controllerInsertSchedule,
-  controllerUpdateSchedule
+  controllerAddCinema,
+  controllerGetAllCinemas,
+  controllerGetCinemaById,
+  controllerUpdateCinema,
+  controllerDeleteCinema
 }

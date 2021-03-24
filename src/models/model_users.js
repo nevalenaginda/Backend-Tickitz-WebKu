@@ -1,8 +1,7 @@
 const connection = require("../configs/db");
 
-// Get All User table category
+// Get All User
 const modelGetAllUsers = (search, order, pages) => {
-  console.log("search " + search + "order " + order + "pages " + pages);
   return new Promise((resolve, reject) => {
     connection.query(
       `SELECT * FROM tb_users ${search} ${order} ${pages}`,
@@ -17,7 +16,7 @@ const modelGetAllUsers = (search, order, pages) => {
   });
 };
 
-/// / Read all field table user and show pages
+// Read all field table user and show pages
 const modelReadTotalUsers = (search) => {
   return new Promise((resolve, reject) => {
     connection.query(
@@ -53,7 +52,7 @@ const modelCheckEmail = (email) => {
 const modelCheckIdUser = (idUser) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT id_user FROM tb_users WHERE id_user like ${idUser}`,
+      `SELECT id_user FROM tb_users WHERE id_user like '${idUser}'`,
       (error, result) => {
         if (!error) {
           resolve(result);
@@ -126,6 +125,69 @@ const modelDeleteUser = (idUser) => {
   });
 };
 
+const createActivation = (email, token) => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `INSERT INTO tb_activations (email, token) VALUES (?,?)`,
+      [email, token],
+      (err, result) => {
+        if (!err) {
+          resolve(result);
+        } else {
+          reject(new Error(err));
+        }
+      }
+    );
+  });
+};
+
+const getActivation = (token, email) => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `SELECT id FROM tb_activations WHERE email = ? AND token = ?`,
+      [email, token],
+      (err, result) => {
+        if (!err) {
+          resolve(result);
+        } else {
+          reject(new Error(err));
+        }
+      }
+    );
+  });
+};
+
+const setActivationUser = (email) => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `UPDATE tb_users SET is_verify = ? WHERE email = ?`,
+      [1, email],
+      (err, result) => {
+        if (!err) {
+          resolve(result);
+        } else {
+          reject(new Error(err));
+        }
+      }
+    );
+  });
+};
+
+const deleteActivation = (id) => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `DELETE FROM tb_activations WHERE id = ?`,
+      [id],
+      (err, result) => {
+        if (!err) {
+          resolve(result);
+        } else {
+          reject(new Error(err));
+        }
+      }
+    );
+  });
+};
 module.exports = {
   modelAddUser,
   modelGetAllUsers,
@@ -135,4 +197,8 @@ module.exports = {
   modelReadTotalUsers,
   modelCheckIdUser,
   modelCheckEmail,
+  createActivation,
+  getActivation,
+  setActivationUser,
+  deleteActivation,
 };

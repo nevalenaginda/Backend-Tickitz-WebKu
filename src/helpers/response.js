@@ -1,3 +1,13 @@
+const response = (res, data, pagination, status, message) => {
+  const result = {
+    status,
+    information: message || null,
+    pagination,
+    data
+  }
+  res.status(status).json(result)
+}
+
 const success = (res, message, pagination, data) => {
   const response = {
     status: 200,
@@ -44,10 +54,48 @@ const badRequest = (res, message, data) => {
   res.status(400).json(response)
 }
 
+const large = (res, message, data) => {
+  const response = {
+    code: 413,
+    message,
+    data
+  }
+  res.status(413).json(response)
+}
+const notAcceptable = (res, message, data) => {
+  const response = {
+    code: 406,
+    message,
+    data
+  }
+  res.status(406).json(response)
+}
+const notAllowed = (res, message, data) => {
+  const response = {
+    code: 405,
+    message,
+    data
+  }
+  res.status(405).json(response)
+}
+const expFailde = (res, message, data) => {
+  const response = {
+    code: 417,
+    message,
+    data
+  }
+  res.status(417).json(response)
+}
+
 module.exports = {
   badRequest,
   createData,
   failed,
   notFound,
-  success
+  success,
+  response,
+  large,
+  notAcceptable,
+  notAllowed,
+  expFailde
 }

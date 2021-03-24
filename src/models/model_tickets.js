@@ -3,7 +3,7 @@ const connection = require('../configs/db')
 const modelGetAllTickets = (data, search, pages) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT tb_tickets.id_tiket, tb_tickets.id_user, tb_movies.movie_title, tb_tickets.price ,tb_tickets.location, tb_tickets.cinema_name, tb_tickets.ticket_status, tb_tickets.seats, tb_tickets.count, tb_tickets.date_time, tb_tickets.updated_at, tb_tickets.created_at FROM tb_tickets INNER JOIN tb_movies ON tb_tickets.id_film = tb_movies.id_movie  ${search} ${data} ${pages}`,
+      `SELECT * FROM tb_tickets  ${search} ${data} ${pages}`,
       (err, results) => {
         if (!err) {
           resolve(results)
@@ -19,7 +19,7 @@ const modelGetAllTickets = (data, search, pages) => {
 const modelReadTotalTickets = (search) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT COUNT(*) as total FROM tb_tickets INNER JOIN tb_movies ON tb_tickets.id_film = tb_movies.id_movie ${search} `,
+      `SELECT COUNT(*) as total FROM tb_tickets ${search} `,
       (error, result) => {
         if (!error) {
           resolve(result)
@@ -35,7 +35,7 @@ const modelReadTotalTickets = (search) => {
 const modelCheckIdTicket = (idTicket) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT id_tiket FROM tb_tickets WHERE id_tiket like ${idTicket}`,
+      `SELECT id_ticket FROM tb_tickets WHERE id_ticket like ${idTicket}`,
       (error, result) => {
         if (!error) {
           resolve(result)
@@ -51,7 +51,7 @@ const modelCheckIdTicket = (idTicket) => {
 const modelGetTicketById = (id) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      'SELECT * FROM tb_tickets WHERE id_tiket= ?',
+      'SELECT * FROM tb_tickets WHERE id_ticket= ?',
       id,
       (err, results) => {
         if (!err) {
@@ -79,7 +79,7 @@ const modelInsertTicket = (data) => {
 const modelUpdateTicket = (idTicket, data) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      'UPDATE tb_tickets SET ? WHERE id_tiket = ?',
+      'UPDATE tb_tickets SET ? WHERE id_ticket = ?',
       [data, idTicket],
       (err, result) => {
         if (!err) {
@@ -95,7 +95,7 @@ const modelUpdateTicket = (idTicket, data) => {
 const modelDeleteTicket = (idTicket) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      'DELETE FROM tb_tickets WHERE id_tiket = ?',
+      'DELETE FROM tb_tickets WHERE id_ticket = ?',
       idTicket,
       (err, results) => {
         if (!err) {

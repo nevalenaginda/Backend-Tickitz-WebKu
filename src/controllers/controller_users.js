@@ -1,6 +1,9 @@
 const bcrypt = require("bcrypt");
+const { v4: uuidv4 } = require("uuid");
+const { envPORT, envJWT } = require("../helpers/env");
+const { sendEmail } = require("../helpers/email");
 const jwt = require("jsonwebtoken");
-const { envJWT } = require("../helpers/env");
+
 const {
   modelAddUser,
   modelGetUserById,
@@ -10,100 +13,163 @@ const {
   modelReadTotalUsers,
   modelCheckEmail,
   modelCheckIdUser,
+  createActivation,
+  getActivation,
+  setActivationUser,
+  deleteActivation,
 } = require("../models/model_users");
 
-const {
-  success,
-  createData,
-  failed,
-  notFound,
-  badRequest,
-} = require("../helpers/response");
+const { response } = require("../helpers/response");
 
-//Add user
+// register
 const controllerAddUser = async (req, res) => {
   const { email, password } = req.body;
+  // console.log(req.body);
 
   if (!email || !password) {
-    badRequest(
-      res,
-      "Failed to register. Email and password cannot be empty",
-      []
-    );
+    return response(res, [], {}, 401, {
+      message: "Failed to register. Email and password cannot be empty",
+      error: null,
+    });
   } else {
     try {
       const checkEmail = await modelCheckEmail(email.toLowerCase());
-      console.log(checkEmail);
-
       if (checkEmail.length === 0) {
         const salt = await bcrypt.genSalt(10);
         const password = await bcrypt.hash(req.body.password, salt);
+
         const data = {
+          id_user: uuidv4(),
           email: email.toLowerCase(),
           password,
           created_at: new Date(),
           updated_at: new Date(),
         };
+        const token = jwt.sign({ identify: data }, envJWT);
         modelAddUser(data)
           .then((result) => {
-            createData(res, "Registration Success", data.email);
+            // console.log(data.email, token);
+            createActivation(data.email, token)
+              .then((result) => {
+                sendEmail(data.email, token)
+                  .then((result) => {
+                    return response(res, [], {}, 200, {
+                      message: "Please check your email four activated account",
+                      error: null,
+                    });
+                  })
+                  .catch((err) => {
+                    return response(res, [], {}, 500, {
+                      message: "Internal server error",
+                      error: err.message,
+                    });
+                  });
+              })
+              .catch((err) => {
+                return response(res, [], {}, 500, {
+                  message: "Internal server error",
+                  error: err.message,
+                });
+              });
+
+            // return response(res, data.email, {}, 200, {
+            //   message: "Registration Success",
+            //   error: null,
+            // });
           })
           .catch((err) => {
             console.log(err.message);
-            failed(res, "Internal server error!", err.message);
+            return response(res, [], {}, 500, {
+              message: "Internal server error",
+              error: err.message,
+            });
           });
       } else {
-        badRequest(res, "Failed to register. Email has been used", []);
+        return response(res, [], {}, 401, {
+          message: "Failed to register. Email has been used.",
+          error: null,
+        });
       }
-    } catch (error) {
-      console.log(error.message);
-      failed(res, "Internal server error!", error.message);
+    } catch (err) {
+      console.log(err.message);
+      return response(res, [], {}, 500, {
+        message: "Internal server error",
+        error: err.message,
+      });
     }
   }
 };
 
-//Add user
+// Login
 const controllerLogin = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    badRequest(
-      res,
-      "Failed to register. Email and password cannot be empty",
-      []
-    );
+    return response(res, [], {}, 401, {
+      message: "Failed to login. Email and password cannot be empty",
+      error: null,
+    });
   } else {
     try {
       const checkEmail = await modelCheckEmail(email.toLowerCase());
-      console.log(checkEmail);
       if (checkEmail.length === 1) {
         const checkPass = await bcrypt.compare(
           password,
           checkEmail[0].password
         );
         if (checkPass) {
-          const dataUser = {
-            id: checkEmail[0].id_user,
-            access: checkEmail[0].access,
-            email: checkEmail[0].email,
-          };
-          const token = jwt.sign(dataUser, envJWT);
-          const allData = {
-            id: checkEmail[0].id_user,
-            access: checkEmail[0].access,
-            token,
-          };
-
-          success(res, "Login succes", [], allData);
+          console.log(checkEmail);
+          if (checkEmail[0].is_verify !== 1) {
+            return response(res, [], {}, 401, {
+              message:
+                "Login failed. Account is not activated yet! Check your email.",
+              error: null,
+            });
+          } else {
+            const dataUser = {
+              id: checkEmail[0].id_user,
+              access: checkEmail[0].access,
+              email: checkEmail[0].email,
+            };
+            const token = jwt.sign(
+              dataUser,
+              envJWT,
+              { expiresIn: "1h" },
+              (err, token) => {
+                const allData = {
+                  id: checkEmail[0].id_user,
+                  access: checkEmail[0].access,
+                  token,
+                };
+                return response(res, allData, {}, 200, {
+                  message: "Succes login",
+                });
+              }
+            );
+            const allData = {
+              id: checkEmail[0].id_user,
+              access: checkEmail[0].access,
+              token,
+            };
+          }
         } else {
-          badRequest(res, "Login failed. Wrong password.", []);
+          return response(res, [], {}, 401, {
+            message: "Login failed. Wrong password.",
+            error: null,
+          });
         }
       } else {
-        badRequest(res, "Failed to login. Email not found", []);
+        return response(res, [], {}, 401, {
+          message: "Failed to login. Email not found.",
+          error: null,
+        });
       }
-    } catch (error) {
-      console.log(error.message);
-      failed(res, "Internal server error!", error.message);
+    } catch (err) {
+      console.log(err.message);
+      return response(res, [], {}, 500, {
+        message: "Internal server error",
+        error: err.message,
+      });
     }
   }
 };
@@ -113,12 +179,10 @@ const controllerGetAllUsers = async (req, res) => {
   try {
     // searcing name
     const name = req.query.name;
-    console.log(name);
     const search = name ? `WHERE full_name LIKE '%${name}%'` : " ";
 
     // order && metode (ASC, DESC)
     const sort = req.query["sort-by"] ? req.query["sort-by"] : "";
-    console.log(sort);
     const order = req.query.order ? req.query.order : "asc";
     const data = sort ? `ORDER BY ${sort} ${order}` : "";
 
@@ -141,40 +205,62 @@ const controllerGetAllUsers = async (req, res) => {
             totalPage: Math.ceil(totalPage[0].total / limit),
           };
 
-          success(res, "Suceess get data user", pagination, result);
+          return response(res, result, pagination, 200, {
+            message: "Success get data user",
+            error: null,
+          });
         } else {
           console.log("Oops, data not found");
-          notFound(res, "Oops, data not found!", []);
+          return response(res, [], {}, 404, {
+            message: "Oops, data not found",
+            error: null,
+          });
         }
       })
       .catch((err) => {
         console.log(err.message);
-        failed(res, "Internal server error!", err.message);
+        return response(res, [], {}, 500, {
+          message: "Internal server error",
+          error: err.message,
+        });
       });
-  } catch (error) {
-    console.log(error.message);
-    failed(res, "Internal server error!", error.message);
+  } catch (err) {
+    console.log(err.message);
+    return response(res, [], {}, 500, {
+      message: "Internal server error",
+      error: err.message,
+    });
   }
 };
 
-//Read user by id
+// Read user by id
 const controllerGetUserById = (req, res) => {
   const UserId = req.params.userId;
   console.log(UserId);
   modelGetUserById(UserId)
     .then((result) => {
       if (result.length > 0) {
-        success(res, `Sucess get data user ${UserId}`, {}, result);
+        return response(res, result, {}, 200, {
+          message: `Success get data user with id ${UserId}`,
+          error: null,
+        });
       } else {
-        notFound(res, "Oops, data not found!", []);
+        return response(res, [], {}, 404, {
+          message: "Oops, data not found",
+          error: null,
+        });
       }
     })
     .catch((err) => {
       console.log(err.message);
-      failed(res, "Internal server error!", error.message);
+      return response(res, [], {}, 500, {
+        message: "Internal server error",
+        error: err.message,
+      });
     });
 };
 
+// update
 const controllerUpdateDataUser = async (req, res) => {
   const userId = req.params.userId;
   const {
@@ -182,20 +268,21 @@ const controllerUpdateDataUser = async (req, res) => {
     last_name,
     email,
     password,
-    gender,
+    profil_image,
     phone_number,
-    image,
   } = req.body;
   if (
     !first_name ||
     !last_name ||
     !email ||
     !password ||
-    !gender ||
-    !phone_number ||
-    !image
+    !profil_image ||
+    !phone_number
   ) {
-    badRequest(res, "Failed to update data user. All data cannot be empty", []);
+    return response(res, [], {}, 401, {
+      message: "Failed to  add data user. All data cannot be empty.",
+      error: null,
+    });
   } else {
     try {
       checkIdUser = await modelCheckIdUser(userId);
@@ -204,53 +291,83 @@ const controllerUpdateDataUser = async (req, res) => {
         const data = {
           first_name,
           last_name,
-          full_name: first_name + " " + last_name,
           email,
           password,
-          gender,
+          profil_image,
           phone_number,
-          image,
           updated_at: new Date(),
         };
         modelUpdateDataUser(userId, data)
           .then((result) => {
-            success(res, `Sucess update data user with id ${userId}`, {}, data);
+            return response(res, [data], {}, 200, {
+              message: "Succes update data user",
+              error: null,
+            });
           })
-          .catch((error) => {
-            console.log(error.message);
-            failed(res, "Internal server error!", error.message);
+          .catch((err) => {
+            console.log(err.message);
+            return response(res, [], {}, 500, {
+              message: "Internal server error!",
+              error: err.message,
+            });
           });
       } else {
-        badRequest(res, `There are no user with Id ${userId} `, []);
+        return response(res, [], {}, 404, {
+          message: "There are no movie with this id",
+          error: null,
+        });
       }
-    } catch (error) {
-      console.log(error.message);
-      failed(res, "Internal server error!", error.message);
+    } catch (err) {
+      console.log(err.message);
+      return response(res, [], {}, 500, {
+        message: "Internal server error!",
+        error: err.message,
+      });
     }
   }
 };
 
+// update
 const controllerUpdateDataUser2 = async (req, res) => {
   const userId = req.params.userId;
+  console.log(userId);
   const data = req.body;
-
   try {
-    checkIdUser = await modelCheckIdUser(userId);
-
-    modelUpdateDataUser(userId, data)
-      .then((result) => {
-        success(res, `Sucess update data user with id ${userId}`, {}, data);
-      })
-      .catch((error) => {
-        console.log(error.message);
-        failed(res, "Internal server error!", error.message);
+    const checkIdUser = await modelCheckIdUser(userId);
+    if (checkIdUser.length === 0) {
+      return response(res, [], {}, 404, {
+        message: "There are no user with this id",
+        error: null,
       });
-  } catch (error) {
-    console.log(error.message);
-    failed(res, "Internal server error!", error.message);
+    } else {
+      const last_profile = await modelGetUserById(userId);
+      data.profil_image = req.file
+        ? `http://localhost:${envPORT}/img/${req.file.filename}`
+        : last_profile[0].profil_image;
+      modelUpdateDataUser(userId, data)
+        .then((result) => {
+          return response(res, [data], {}, 200, {
+            message: "Succes update data user",
+            error: null,
+          });
+        })
+        .catch((err) => {
+          console.log(err.message);
+          return response(res, [], {}, 500, {
+            message: "Internal server error!",
+            error: err.message,
+          });
+        });
+    }
+  } catch (err) {
+    console.log(err.message);
+    return response(res, [], {}, 500, {
+      message: "Internal server error!",
+      error: err.message,
+    });
   }
 };
-//Delete User
+// Delete User
 const controllerDeleteUser = async (req, res) => {
   const userId = req.params.userId;
   try {
@@ -258,18 +375,76 @@ const controllerDeleteUser = async (req, res) => {
     if (checkIdUser.length !== 0) {
       modelDeleteUser(userId)
         .then((result) => {
-          success(res, `Sucess delete user with id: ${userId}`, {}, []);
+          return response(res, [], {}, 200, {
+            message: "Succes delete data user",
+            error: null,
+          });
         })
-        .catch((error) => {
-          console.log(error.mesage);
-          failed(res, "Internal server error!", error.message);
+        .catch((err) => {
+          console.log(err.mesage);
+          return response(res, [], {}, 500, {
+            message: "Internal server error!",
+            error: err.message,
+          });
         });
     } else {
-      badRequest(res, `There are no user with Id ${userId} `, []);
+      return response(res, [], {}, 404, {
+        message: "There are no movie user with this id",
+        error: null,
+      });
     }
-  } catch (error) {
-    failed(res, "Internal server error!", error.message);
+  } catch (err) {
+    return response(res, [], {}, 500, {
+      message: "Internal server error!",
+      error: err.message,
+    });
   }
+};
+
+const controllerSendEmail = async (req, res) => {
+  const resEmail = await sendEmail(
+    "nevalenaginda10@gmail.com",
+    "Activate Account"
+  );
+  console.log(resEmail);
+  res.json({
+    status: "success",
+  });
+};
+
+const controllerActivation = (req, res) => {
+  getActivation(req.params.token, req.params.email)
+    .then((result) => {
+      const id_activation = result[0].id;
+      setActivationUser(req.params.email)
+        .then((result) => {
+          deleteActivation(id_activation)
+            .then((result) => {
+              return response(res, [], {}, 200, {
+                message: "Succes activation account",
+                error: null,
+              });
+            })
+            .catch((err) => {
+              return response(res, [], {}, 500, {
+                message: "Internal server error!",
+                error: err.message,
+              });
+            });
+        })
+        .catch((err) => {
+          return response(res, [], {}, 500, {
+            message: "Internal server error!",
+            error: err.message,
+          });
+        });
+    })
+    .catch((err) => {
+      return response(res, [], {}, 500, {
+        message: "Internal server error!",
+        error: err.message,
+      });
+    });
 };
 
 module.exports = {
@@ -280,4 +455,6 @@ module.exports = {
   controllerDeleteUser,
   controllerUpdateDataUser2,
   controllerLogin,
+  controllerSendEmail,
+  controllerActivation,
 };

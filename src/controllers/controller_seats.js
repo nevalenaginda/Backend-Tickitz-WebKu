@@ -1,38 +1,46 @@
 const {
-  modelAddSchedule,
-  modelCheckIdSchedule,
-  modelDeleteSchedule,
-  modelGetAllSchedules,
-  modelGetScheduleById,
-  modelReadTotalSchedule,
-  modelUpdateDataSchedule
-} = require('../models/model_schedules')
-
+  modelAddSeat,
+  modelReadTotalSeats,
+  modelGetAllSeats,
+  modelGetSeatById,
+  modelUpdateDataSeat,
+  modelCheckIdSeat,
+  modelDeleteSeat
+} = require('../models/model_seats')
 const { response } = require('../helpers/response')
 
 // create
-const controllerInsertSchedule = async (req, res) => {
-  const { id_movie, id_cinema, playing_time, playing_date, price } = req.body
+const controllerAddSeat = async (req, res) => {
+  const {
+    id_schedule,
+    id_transaction,
+    id_cinema,
+    seat_row,
+    seat_col
+  } = req.body
+  console.log(req.body)
 
-  if (!id_movie || !id_cinema || !playing_time || !playing_date || !price) {
+  if (!id_schedule || !id_transaction || !id_cinema || !seat_row || !seat_col) {
+    // res, data, pagination, status, message
     return response(res, [], {}, 401, {
-      message: 'Failed to  add data schedule. All data cannot be empty.',
+      message: 'Failed to  add data seat. All data cannot be empty.',
       error: null
     })
   } else {
     const data = {
-      id_movie,
+      id_schedule,
+      id_transaction,
       id_cinema,
-      playing_time,
-      playing_date,
-      price,
+      seat_row,
+      seat_col,
       created_at: new Date(),
       updated_at: new Date()
     }
 
-    modelAddSchedule(data)
+    modelAddSeat(data)
       .then((result) => {
-        console.log('Success insert schedule')
+        console.log('Success insert seat.')
+        // res, data, pagination, status, message
         return response(res, [data], {}, 201, {
           message: 'Success insert seat.',
           error: null
@@ -40,6 +48,7 @@ const controllerInsertSchedule = async (req, res) => {
       })
       .catch((err) => {
         console.log(err.message)
+        // res, data, pagination, status, message
         return response(res, [], {}, 500, {
           message: 'Internal server error',
           error: err.message
@@ -48,8 +57,8 @@ const controllerInsertSchedule = async (req, res) => {
   }
 }
 
-// Read All schedule
-const controllerGetAllSchedules = async (req, res) => {
+// Read All Seats
+const controllerGetAllSeats = async (req, res) => {
   try {
     // sort && methode (ASC, DESC)
     const sortby = req.query['sort-by'] ? req.query['sort-by'] : ''
@@ -68,9 +77,9 @@ const controllerGetAllSchedules = async (req, res) => {
     const pages = page ? `LIMIT ${start}, ${limit}` : ''
 
     // total page
-    const totalPage = await modelReadTotalSchedule(search)
+    const totalPage = await modelReadTotalSeats(search)
 
-    modelGetAllSchedules(data, search, pages)
+    modelGetAllSeats(data, search, pages)
       .then((result) => {
         if (result.length > 0) {
           const pagination = {
@@ -79,9 +88,9 @@ const controllerGetAllSchedules = async (req, res) => {
             total: totalPage[0].total,
             totalPage: Math.ceil(totalPage[0].total / limit)
           }
-          console.log('Success get data schedule')
+          console.log('Success get data seat')
           return response(res, result, pagination, 200, {
-            message: 'Success get data schedule',
+            message: 'Success get data seat',
             error: null
           })
         } else {
@@ -108,14 +117,15 @@ const controllerGetAllSchedules = async (req, res) => {
   }
 }
 
-// Read schedule by id schedule
-const controllerGetSceheduleById = (req, res) => {
-  const idSchedule = req.params.idSchedule
-  modelGetScheduleById(idSchedule)
+// Read Seat by id ticket
+const controllerGetSeatById = (req, res) => {
+  const idSeat = req.params.idSeat
+  modelGetSeatById(idSeat)
     .then((result) => {
       if (result.length > 0) {
+        // res, data, pagination, status, message
         return response(res, result, {}, 200, {
-          message: `Success get data schedule with id ${idSchedule}`,
+          message: `Success get data seat with id ${idSeat}`,
           error: null
         })
       } else {
@@ -134,24 +144,24 @@ const controllerGetSceheduleById = (req, res) => {
     })
 }
 
-// Update schedule
-const controllerUpdateSchedule = async (req, res) => {
-  const idSchedule = req.params.idSchedule
+// Update movie
+const controllerUpdateSeat = async (req, res) => {
+  const idSeat = req.params.idSeat
   try {
-    const checkIdSchedule = await modelCheckIdSchedule(idSchedule)
-    if (checkIdSchedule.length !== 0) {
+    const checkIdSeat = await modelCheckIdSeat(idSeat)
+    if (checkIdSeat.length !== 0) {
       data = req.body
       data.updated_at = new Date()
 
-      modelUpdateDataSchedule(idSchedule, data)
+      modelUpdateDataSeat(idSeat, data)
         .then((result) => {
           return response(res, [data], {}, 200, {
-            message: `Succes update data schedule with id ${idSchedule}`,
+            message: `Succes update data seat with id ${idSeat}`,
             error: null
           })
         })
         .catch((err) => {
-          console.log(err.message)
+          console.log(err)
           return response(res, [], {}, 500, {
             message: 'Internal server error!',
             error: err.message
@@ -159,7 +169,7 @@ const controllerUpdateSchedule = async (req, res) => {
         })
     } else {
       return response(res, [], {}, 404, {
-        message: `There are no schedule with Id ${idSchedule}`,
+        message: `There are no seat with Id ${idSeat}`,
         error: null
       })
     }
@@ -172,16 +182,16 @@ const controllerUpdateSchedule = async (req, res) => {
   }
 }
 
-// Delete
-const controllerDeleteSchedule = async (req, res) => {
-  const idSchedule = req.params.idSchedule
+// Delete seat
+const controllerDeleteSeat = async (req, res) => {
+  const idSeat = req.params.idSeat
   try {
-    const checkIdSchedule = await modelCheckIdSchedule(idSchedule)
-    if (checkIdSchedule.length !== 0) {
-      modelDeleteSchedule(idSchedule)
+    const checkIdSeat = await modelCheckIdSeat(idSeat)
+    if (checkIdSeat.length !== 0) {
+      modelDeleteSeat(idSeat)
         .then((result) => {
           return response(res, [], {}, 200, {
-            message: `Succes delete data schedule with id ${idSchedule}`,
+            message: `Succes delete data seat with id ${idSeat}`,
             error: null
           })
         })
@@ -194,7 +204,7 @@ const controllerDeleteSchedule = async (req, res) => {
         })
     } else {
       return response(res, [], {}, 404, {
-        message: `There are no schedule with Id ${idSchedule}`,
+        message: `There are no seat with Id ${idSeat}`,
         error: null
       })
     }
@@ -208,9 +218,9 @@ const controllerDeleteSchedule = async (req, res) => {
 }
 
 module.exports = {
-  controllerDeleteSchedule,
-  controllerGetAllSchedules,
-  controllerGetSceheduleById,
-  controllerInsertSchedule,
-  controllerUpdateSchedule
+  controllerAddSeat,
+  controllerGetAllSeats,
+  controllerGetSeatById,
+  controllerUpdateSeat,
+  controllerDeleteSeat
 }

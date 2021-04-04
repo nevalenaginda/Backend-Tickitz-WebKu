@@ -97,7 +97,7 @@ const controllerGetAllMovies = async (req, res) => {
   try {
     // sort && methode (ASC, DESC)
     const sortby = req.query["sort-by"] ? req.query["sort-by"] : "";
-    const order = req.query.order ? req.query.order : "desc";
+    const order = req.query.order ? req.query.order : "ASC";
     const data = sortby ? `ORDER BY ${sortby} ${order}` : "";
 
     // searcing name
@@ -115,6 +115,126 @@ const controllerGetAllMovies = async (req, res) => {
     const totalPage = await modelReadTotalMovies(search);
 
     modelGetAllMovies(data, search, pages)
+      .then((result) => {
+        if (result.length > 0) {
+          const pagination = {
+            page: page,
+            limit: limit,
+            total: totalPage[0].total,
+            totalPage: Math.ceil(totalPage[0].total / limit),
+          };
+          setDataRedis();
+          return response(res, result, pagination, 200, {
+            message: "Success get data movie from server",
+            error: null,
+          });
+        } else {
+          return response(res, [], {}, 404, {
+            message: "Oops, data not found",
+            error: null,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+        return response(res, [], {}, 500, {
+          message: "Internal server error",
+          error: err.message,
+        });
+      });
+  } catch (err) {
+    console.log(err.message);
+    return response(res, [], {}, 500, {
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+};
+
+// Read All upcoming
+const controllerGetUpcoming = async (req, res) => {
+  try {
+    // sort && methode (ASC, DESC)
+    const sortby = req.query["sort-by"] ? req.query["sort-by"] : "";
+    const order = req.query.order ? req.query.order : "desc";
+    const data = sortby ? `ORDER BY ${sortby} ${order}` : "";
+
+    // searcing name
+    const searchby = req.query["search-by"];
+    const item = req.query.item;
+    const key = "WHERE release_date > CURRENT_DATE() ";
+    const search = item ? ` AND   ${searchby} LIKE '%${item}%'` : " ";
+
+    // pagination
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 5;
+    const start = page === 1 ? 0 : (page - 1) * limit;
+    const pages = page ? `LIMIT ${start}, ${limit}` : "";
+
+    // total page
+    const totalPage = await modelReadTotalMovies(key + search);
+
+    modelGetAllMovies(key + search, data, pages)
+      .then((result) => {
+        if (result.length > 0) {
+          const pagination = {
+            page: page,
+            limit: limit,
+            total: totalPage[0].total,
+            totalPage: Math.ceil(totalPage[0].total / limit),
+          };
+          setDataRedis();
+          return response(res, result, pagination, 200, {
+            message: "Success get data movie from server",
+            error: null,
+          });
+        } else {
+          return response(res, [], {}, 404, {
+            message: "Oops, data not found",
+            error: null,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+        return response(res, [], {}, 500, {
+          message: "Internal server error",
+          error: err.message,
+        });
+      });
+  } catch (err) {
+    console.log(err.message);
+    return response(res, [], {}, 500, {
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+};
+
+// Read All now showing
+const controllerGetNowShowing = async (req, res) => {
+  try {
+    // sort && methode (ASC, DESC)
+    const sortby = req.query["sort-by"] ? req.query["sort-by"] : "";
+    const order = req.query.order ? req.query.order : "desc";
+    const data = sortby ? ` ORDER BY ${sortby} ${order} ` : "";
+
+    // searcing name
+    const searchby = req.query["search-by"];
+    const item = req.query.item;
+    const key = "WHERE release_date <= CURRENT_DATE()";
+    const search = item ? ` AND   ${searchby} LIKE '%${item}%'` : " ";
+
+    // pagination
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 5;
+    const start = page === 1 ? 0 : (page - 1) * limit;
+    const pages = page ? `LIMIT ${start}, ${limit}` : "";
+
+    // total page
+    const totalPage = await modelReadTotalMovies(key + search);
+
+    modelGetAllMovies(key + search, data, pages)
       .then((result) => {
         if (result.length > 0) {
           const pagination = {
@@ -183,13 +303,13 @@ const controllerUpdateMovie = async (req, res) => {
   try {
     const checkIdMovie = await modelCheckIdMovie(idMovie);
     if (checkIdMovie.length !== 0) {
-      data = req.body;
+      let data = req.body;
       data.updated_at = new Date();
       const last_image = await modelGetMovieById(idMovie);
 
       if (req.file) {
         data.image = `http://localhost:${envPORT}/img/${req.file.filename}`;
-        delImage = last_image[0].image.split("/").slice(-1)[0];
+        let delImage = last_image[0].image.split("/").slice(-1)[0];
         if (delImage !== "default_poster.jpg") {
           const locationPath = "./src/uploads/" + delImage;
           fs.unlinkSync(locationPath);
@@ -264,7 +384,7 @@ const controllerDeleteMovie = async (req, res) => {
     const checkIdMovie = await modelCheckIdMovie(idMovie);
     if (checkIdMovie.length !== 0) {
       const last_image = await modelGetMovieById(idMovie);
-      delImage = last_image[0].image.split("/").slice(-1)[0];
+      let delImage = last_image[0].image.split("/").slice(-1)[0];
       if (delImage !== "default_poster.jpg") {
         const locationPath = "./src/uploads/" + delImage;
         fs.unlinkSync(locationPath);
@@ -321,4 +441,6 @@ module.exports = {
   controllerInsertMovie,
   controllerUpdateMovie,
   controllerDeleteMovie,
+  controllerGetUpcoming,
+  controllerGetNowShowing,
 };

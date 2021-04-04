@@ -16,30 +16,21 @@ const {
   controllerDeleteUser,
   controllerLogin,
   controllerActivation,
+  controllerGetProfile,
 } = require("../controllers/controller_users");
 
 Route.post("/register", controllerAddUser)
   .post("/login", controllerLogin)
   .get("/activate/:token/:email", controllerActivation)
+  .get("/profile", authentification, controllerGetProfile)
   .get("/", authentification, controllerGetAllUsers)
   .get("/:userId", authentification, controllerGetUserById)
-  .put(
-    "/:userId",
-    authentification,
-    authorizationUser,
-    controllerUpdateDataUser
-  )
+  .put("/:userId", authentification, controllerUpdateDataUser)
   .patch(
     "/:userId",
     authentification,
-    authorizationUser,
     singleUploadimg,
     controllerUpdateDataUser2
   )
-  .delete(
-    "/:userId",
-    authentification,
-    authorizationAdmin,
-    controllerDeleteUser
-  );
+  .delete("/:userId", authentification, controllerDeleteUser);
 module.exports = Route;

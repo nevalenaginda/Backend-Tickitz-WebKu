@@ -15,7 +15,7 @@ const sendEmail = (email, token) => {
       let info = await transporter.sendMail({
         from: "nevalen.aginda1532@students.unila.ac.id", // sender address
         to: email, // list of receivers
-        subject: "percobaan", // Subject line
+        subject: "Activation account.", // Subject line
         html: `Hello,<br> Please Click on the link to verify your email.<br><a href=http://localhost:${envPORT}/v1/user/activate/${token}/${email}>Click here to verify</a>`,
       });
       resolve(info);

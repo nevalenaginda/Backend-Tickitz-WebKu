@@ -144,7 +144,7 @@ const controllerUpdateSchedule = async (req, res) => {
   try {
     const checkIdSchedule = await modelCheckIdSchedule(idSchedule);
     if (checkIdSchedule.length !== 0) {
-      data = req.body;
+      let data = req.body;
       data.updated_at = new Date();
 
       modelUpdateDataSchedule(idSchedule, data)
@@ -219,9 +219,9 @@ const controllerGetAllDetailSchedules = async (req, res) => {
   const pages = page ? `LIMIT ${start}, ${limit}` : "";
 
   //filter
-  city = req.query.city;
-  date = req.query.date;
-  movie = req.query.movie;
+  const city = req.query.city;
+  const date = req.query.date;
+  const movie = req.query.movie;
   let search = "";
   if (city && date && movie) {
     search = `WHERE tb_cinemas.city_cinema = '${city}' AND tb_schedule_movies.playing_date = '${date}' AND tb_movies.movie_title  LIKE '%${movie}%'`;
@@ -287,8 +287,8 @@ const controllerNowShowing = async (req, res) => {
   const pages = page ? `LIMIT ${start}, ${limit}` : "";
 
   //filter
-  search = `WHERE tb_schedule_movies.playing_date = CURRENT_DATE()`;
-  order = "";
+  const search = `WHERE tb_schedule_movies.playing_date = CURRENT_DATE()`;
+  const order = "";
 
   // total page
   const totalPage = await modelReadTotalDetailSchedules(search);
@@ -337,8 +337,8 @@ const controllerUpComing = async (req, res) => {
   const pages = page ? `LIMIT ${start}, ${limit}` : "";
 
   //filter
-  search = `WHERE tb_schedule_movies.playing_date > CURRENT_DATE()`;
-  order = "";
+  const search = `WHERE tb_schedule_movies.playing_date > CURRENT_DATE()`;
+  const order = "";
 
   // total page
   const totalPage = await modelReadTotalDetailSchedules(search);

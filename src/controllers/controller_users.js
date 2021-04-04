@@ -52,7 +52,8 @@ const controllerAddUser = async (req, res) => {
                 sendEmail(data.email, token)
                   .then((result) => {
                     return response(res, [], {}, 200, {
-                      message: "Please check your email four activated account",
+                      message:
+                        "Please check your email to activated your account",
                       error: null,
                     });
                   })
@@ -79,7 +80,8 @@ const controllerAddUser = async (req, res) => {
           });
       } else {
         return response(res, [], {}, 401, {
-          message: "Failed to register. Email has been used.",
+          message:
+            "Failed to register. Email has been used. Please login or activated your email.",
           error: null,
         });
       }
@@ -119,18 +121,20 @@ const controllerLogin = async (req, res) => {
             });
           } else {
             const dataUser = {
-              id: checkEmail[0].id_user,
+              id_user: checkEmail[0].id_user,
               access: checkEmail[0].access,
               email: checkEmail[0].email,
             };
             const token = jwt.sign(
               dataUser,
               envJWT,
-              { expiresIn: "1h" },
+              { expiresIn: "12h" },
               (err, token) => {
                 const allData = {
-                  id: checkEmail[0].id_user,
+                  id_user: checkEmail[0].id_user,
                   access: checkEmail[0].access,
+                  profil_image: checkEmail[0].profil_image,
+                  email: checkEmail[0].email,
                   token,
                 };
                 return response(res, allData, {}, 200, {
@@ -138,11 +142,11 @@ const controllerLogin = async (req, res) => {
                 });
               }
             );
-            const allData = {
-              id: checkEmail[0].id_user,
-              access: checkEmail[0].access,
-              token,
-            };
+            // const allData = {
+            //   id: checkEmail[0].id_user,
+            //   access: checkEmail[0].access,
+            //   token,
+            // };
           }
         } else {
           return response(res, [], {}, 401, {
@@ -276,7 +280,7 @@ const controllerUpdateDataUser = async (req, res) => {
     });
   } else {
     try {
-      checkIdUser = await modelCheckIdUser(userId);
+      const checkIdUser = await modelCheckIdUser(userId);
 
       if (checkIdUser.length !== 0) {
         const data = {
@@ -361,7 +365,7 @@ const controllerUpdateDataUser2 = async (req, res) => {
 const controllerDeleteUser = async (req, res) => {
   const userId = req.params.userId;
   try {
-    checkIdUser = await modelCheckIdUser(userId);
+    const checkIdUser = await modelCheckIdUser(userId);
     if (checkIdUser.length !== 0) {
       modelDeleteUser(userId)
         .then((result) => {
@@ -391,14 +395,29 @@ const controllerDeleteUser = async (req, res) => {
   }
 };
 
-const controllerSendEmail = async (req, res) => {
-  const resEmail = await sendEmail(
-    "nevalenaginda10@gmail.com",
-    "Activate Account"
-  );
-  res.json({
-    status: "success",
-  });
+const controllerGetProfile = (req, res) => {
+  const token = req.token;
+  const email = req.email;
+  modelCheckEmail(email)
+    .then((result) => {
+      const data = {
+        id_user: result[0].id_user,
+        profil_image: result[0].profil_image,
+        access: result[0].access,
+        token,
+        email,
+      };
+      return response(res, data, {}, 200, {
+        message: "Succes get profile",
+        error: null,
+      });
+    })
+    .catch((err) => {
+      return response(res, [], {}, 500, {
+        message: "Internal server error",
+        error: err.message,
+      });
+    });
 };
 
 const controllerActivation = (req, res) => {
@@ -409,10 +428,7 @@ const controllerActivation = (req, res) => {
         .then((result) => {
           deleteActivation(id_activation)
             .then((result) => {
-              return response(res, [], {}, 200, {
-                message: "Succes activation account",
-                error: null,
-              });
+              return res.status(301).redirect("http://localhost:3000/login");
             })
             .catch((err) => {
               return response(res, [], {}, 500, {
@@ -444,6 +460,6 @@ module.exports = {
   controllerDeleteUser,
   controllerUpdateDataUser2,
   controllerLogin,
-  controllerSendEmail,
+  controllerGetProfile,
   controllerActivation,
 };

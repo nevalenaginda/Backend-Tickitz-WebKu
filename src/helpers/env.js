@@ -9,4 +9,7 @@ module.exports = {
   envJWT: process.env.JWTCode,
   envEmail: process.env.EMAIL,
   envEmailPass: process.env.PASSWORD,
+  envURLImage: process.env.URL_IMAGE,
+  envURLFrontEnd: process.env.URL_FRONTEND,
+  envURLBackEnd: process.env.URL_BACKEND,
 };

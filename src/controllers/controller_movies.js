@@ -8,12 +8,13 @@ const {
   modelReadTotalMovies,
   modelGetAllMoviesRedis,
 } = require("../models/model_movies");
-const { envPORT } = require("../helpers/env");
+const { envURLImage } = require("../helpers/env");
 const { response } = require("../helpers/response");
 
 const redisClient = require("../configs/redis");
 // filesystem
 const fs = require("fs");
+const { map } = require("lodash");
 
 const setDataRedis = () => {
   modelGetAllMoviesRedis()
@@ -56,9 +57,7 @@ const controllerInsertMovie = async (req, res) => {
       error: null,
     });
   } else {
-    const image = req.file
-      ? `http://localhost:${envPORT}/img/${req.file.filename}`
-      : `http://localhost:${envPORT}/img/default_poster.jpg`;
+    const image = req.file ? `${req.file.filename}` : `default_poster.jpg`;
     const data = {
       movie_title,
       image,
@@ -77,6 +76,7 @@ const controllerInsertMovie = async (req, res) => {
     modelAddMovie(data)
       .then((result) => {
         setDataRedis();
+        data.image = `${envURLImage}/${data.image}`;
         return response(res, [data], {}, 201, {
           message: "Success insert movie.",
           error: null,
@@ -124,6 +124,9 @@ const controllerGetAllMovies = async (req, res) => {
             totalPage: Math.ceil(totalPage[0].total / limit),
           };
           setDataRedis();
+          result.map((item, index) => {
+            result[index].image = `${envURLImage}/${item.image}`;
+          });
           return response(res, result, pagination, 200, {
             message: "Success get data movie from server",
             error: null,
@@ -184,6 +187,9 @@ const controllerGetUpcoming = async (req, res) => {
             totalPage: Math.ceil(totalPage[0].total / limit),
           };
           setDataRedis();
+          result.map((item, index) => {
+            result[index].image = `${envURLImage}/${item.image}`;
+          });
           return response(res, result, pagination, 200, {
             message: "Success get data movie from server",
             error: null,
@@ -244,6 +250,9 @@ const controllerGetNowShowing = async (req, res) => {
             totalPage: Math.ceil(totalPage[0].total / limit),
           };
           setDataRedis();
+          result.map((item, index) => {
+            result[index].image = `${envURLImage}/${item.image}`;
+          });
           return response(res, result, pagination, 200, {
             message: "Success get data movie from server",
             error: null,
@@ -277,6 +286,7 @@ const controllerGetMovieById = (req, res) => {
   modelGetMovieById(idMovie)
     .then((result) => {
       if (result.length > 0) {
+        result[0].image = `${envURLImage}/${result[0].image}`;
         return response(res, result, {}, 200, {
           message: `Success get data movie with id ${idMovie}`,
           error: null,
@@ -308,14 +318,15 @@ const controllerUpdateMovie = async (req, res) => {
       const last_image = await modelGetMovieById(idMovie);
 
       if (req.file) {
-        data.image = `http://localhost:${envPORT}/img/${req.file.filename}`;
-        let delImage = last_image[0].image.split("/").slice(-1)[0];
-        if (delImage !== "default_poster.jpg") {
-          const locationPath = "./src/uploads/" + delImage;
+        data.image = `${req.file.filename}`;
+        // let delImage = last_image[0].image.split("/").slice(-1)[0];
+        if (last_image[0].image !== "default_poster.jpg") {
+          const locationPath = "./src/uploads/" + last_image[0].image;
           fs.unlinkSync(locationPath);
           modelUpdateDataMovie(idMovie, data)
             .then((result) => {
               setDataRedis();
+              data.image = `${envURLImage}/${data.image}`;
               return response(res, [data], {}, 200, {
                 message: `Succes update data movie with id ${idMovie}`,
                 error: null,
@@ -332,6 +343,7 @@ const controllerUpdateMovie = async (req, res) => {
           modelUpdateDataMovie(idMovie, data)
             .then((result) => {
               setDataRedis();
+              data.image = `${envURLImage}/${data.image}`;
               return response(res, [data], {}, 200, {
                 message: `Succes update data movie with id ${idMovie}`,
                 error: null,
@@ -349,6 +361,7 @@ const controllerUpdateMovie = async (req, res) => {
         modelUpdateDataMovie(idMovie, data)
           .then((result) => {
             setDataRedis();
+            data.image = `${envURLImage}/${data.image}`;
             return response(res, [data], {}, 200, {
               message: `Succes update data movie with id ${idMovie}`,
               error: null,

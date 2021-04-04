@@ -1,6 +1,11 @@
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
-const { envPORT, envJWT } = require("../helpers/env");
+const {
+  envPORT,
+  envJWT,
+  envURLFrontEnd,
+  envURLImage,
+} = require("../helpers/env");
 const { sendEmail } = require("../helpers/email");
 const jwt = require("jsonwebtoken");
 
@@ -133,7 +138,7 @@ const controllerLogin = async (req, res) => {
                 const allData = {
                   id_user: checkEmail[0].id_user,
                   access: checkEmail[0].access,
-                  profil_image: checkEmail[0].profil_image,
+                  profil_image: `${envURLImage}/${checkEmail[0].profil_image}`,
                   email: checkEmail[0].email,
                   token,
                 };
@@ -235,6 +240,7 @@ const controllerGetUserById = (req, res) => {
   modelGetUserById(UserId)
     .then((result) => {
       if (result.length > 0) {
+        result[0].profil_image = `${envURLImage}/${result[0].profil_image}`;
         return response(res, result, {}, 200, {
           message: `Success get data user with id ${UserId}`,
           error: null,
@@ -336,10 +342,11 @@ const controllerUpdateDataUser2 = async (req, res) => {
     } else {
       const last_profile = await modelGetUserById(userId);
       data.profil_image = req.file
-        ? `http://localhost:${envPORT}/img/${req.file.filename}`
+        ? `${req.file.filename}`
         : last_profile[0].profil_image;
       modelUpdateDataUser(userId, data)
         .then((result) => {
+          data.profil_image = `${envURLImage}/${data.profil_image}`;
           return response(res, [data], {}, 200, {
             message: "Succes update data user",
             error: null,
@@ -402,7 +409,7 @@ const controllerGetProfile = (req, res) => {
     .then((result) => {
       const data = {
         id_user: result[0].id_user,
-        profil_image: result[0].profil_image,
+        profil_image: `${envURLImage}/${result[0].profil_image}`,
         access: result[0].access,
         token,
         email,
@@ -428,7 +435,7 @@ const controllerActivation = (req, res) => {
         .then((result) => {
           deleteActivation(id_activation)
             .then((result) => {
-              return res.status(301).redirect("http://localhost:3000/login");
+              return res.status(301).redirect(`${envURLFrontEnd}`);
             })
             .catch((err) => {
               return response(res, [], {}, 500, {

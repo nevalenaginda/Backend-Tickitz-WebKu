@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const { envEmail, envEmailPass, envPORT } = require("../helpers/env");
+const { envEmail, envEmailPass, envURLBackEnd } = require("../helpers/env");
 
 let transporter = nodemailer.createTransport({
   // host: 'smtp.gmail.com',
@@ -16,7 +16,7 @@ const sendEmail = (email, token) => {
         from: "nevalen.aginda1532@students.unila.ac.id", // sender address
         to: email, // list of receivers
         subject: "Activation account.", // Subject line
-        html: `Hello,<br> Please Click on the link to verify your email.<br><a href=http://localhost:${envPORT}/v1/user/activate/${token}/${email}>Click here to verify</a>`,
+        html: `Hello,<br> Please Click on the link to verify your email.<br><a href=${envURLBackEnd}/user/activate/${token}/${email}>Click here to verify</a>`,
       });
       resolve(info);
     } catch (error) {

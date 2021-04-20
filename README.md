@@ -93,3 +93,8 @@ Tersedia 7 endpoint yaitu:
 5. '/schedule'
 6. '/cinema'
 7. '/seat'
+
+### Link:
+
+- [Frontend](https://github.com/nevalenaginda/Frontend-Tickitz-WebKu)
+- [Visit Project](https://amazing-galileo-c1506b.netlify.app/)

@@ -97,4 +97,4 @@ Tersedia 7 endpoint yaitu:
 ### Link:
 
 - [Frontend](https://github.com/nevalenaginda/Frontend-Tickitz-WebKu)
-- [Visit Project](https://amazing-galileo-c1506b.netlify.app/)
+- [Visit Project](http://100.25.29.134:3000/)

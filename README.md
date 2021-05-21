@@ -97,4 +97,4 @@ Tersedia 7 endpoint yaitu:
 ### Link:
 
 - [Frontend](https://github.com/nevalenaginda/Frontend-Tickitz-WebKu)
-- [Visit Project](http://100.25.29.134:3000/)
+- [Visit Project](https://tickitz-apps.netlify.app/)

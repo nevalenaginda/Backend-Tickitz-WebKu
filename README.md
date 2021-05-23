@@ -1,8 +1,22 @@
-# Intermediate Backend Week 6
+<h1 align="center">Tickitz</h1>
+<p align="center">
+  <a href="https://tickitz-apps.netlify.app" target="_blank"><img src="https://i.ibb.co/tzSzq4x/Tickitz-2.png" alt="Tickitz-2" border="0" /></a>
+</p>
 
 ### Informasi
 
-File ini merupakan kelanjutan dari pembuatan REST API Tiket Film [sebelumnya]. Pada project ini selain sistem CRUD telah ditambahkan sistem authorisasi, authentifikasi, tokenisasi, dan aktivasi user. Berikut adalah module yang digunakan pada project ini:
+Tickitz Web-Ku merupakan aplikasi web yang dibangun menggunakan Reactjs di sisi frontend, serta Nodejs dan Expressjs di sisi backend. Website ini berfungsi untuk memesan tiket film secara online sehingga mudah digunakan oleh user mobile dan desktop.
+
+
+###Fitur
+
+- Authetikasi dengan JWT
+- Multilevel Authorisasi
+- Verifikasi Email
+- Unggah Gambar
+- Redis
+- CRUD Untuk Semua Tabel Pada Database
+
 
 ### Modules
 
@@ -76,25 +90,9 @@ Kemudian ketikan text berikut
 
 Sebelum menjalankan project ini pastikan telah mengaktifkan module Apacahe dan MySql di XAMPP
 
-### REST API SERVER
-
-Kita dapat menggunakan REST API yang dibuat dengan mengunjungi link berikut.
-
-```
-http://100.25.29.134:5000/v1/
-```
-
-Tersedia 7 endpoint yaitu:
-
-1. '/user'
-2. '/ticket',
-3. '/transaction'
-4. '/movie'
-5. '/schedule'
-6. '/cinema'
-7. '/seat'
+## Dokumentasi API
+[![Run in Postman](https://github.com/nevalenaginda/Frontend-Tickitz-WebKu)
 
 ### Link:
-
-- [Frontend](https://github.com/nevalenaginda/Frontend-Tickitz-WebKu)
-- [Visit Project](https://tickitz-apps.netlify.app/)
+- :white_check_mark: [Frontend](https://github.com/nevalenaginda/Frontend-Tickitz-WebKu)
+- :rocket: [Deploy](https://tickitz-apps.netlify.app)

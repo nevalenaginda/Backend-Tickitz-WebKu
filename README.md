@@ -8,9 +8,9 @@
 Tickitz Web-Ku merupakan aplikasi web yang dibangun menggunakan Reactjs di sisi frontend, serta Nodejs dan Expressjs di sisi backend. Website ini berfungsi untuk memesan tiket film secara online sehingga mudah digunakan oleh user mobile dan desktop.
 
 
-###Fitur
+### Fitur
 
-- Authetikasi dengan JWT
+- Authentikasi dengan JWT
 - Multilevel Authorisasi
 - Verifikasi Email
 - Unggah Gambar
@@ -91,7 +91,7 @@ Kemudian ketikan text berikut
 Sebelum menjalankan project ini pastikan telah mengaktifkan module Apacahe dan MySql di XAMPP
 
 ## Dokumentasi API
-[![Run in Postman](https://github.com/nevalenaginda/Frontend-Tickitz-WebKu)
+[![Run in Postman]](https://github.com/nevalenaginda/Frontend-Tickitz-WebKu)
 
 ### Link:
 - :white_check_mark: [Frontend](https://github.com/nevalenaginda/Frontend-Tickitz-WebKu)

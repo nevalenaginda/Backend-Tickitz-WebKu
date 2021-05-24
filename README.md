@@ -91,7 +91,7 @@ Kemudian ketikan text berikut
 Sebelum menjalankan project ini pastikan telah mengaktifkan module Apacahe dan MySql di XAMPP
 
 ### Dokumentasi API
-[![Run in Postman](https://documenter.getpostman.com/view/13256965/TzXukecS)
+[![Run in Postman]](https://documenter.getpostman.com/view/13256965/TzXukecS)
 
 ### Link:
 - :white_check_mark: [Frontend](https://github.com/nevalenaginda/Frontend-Tickitz-WebKu)

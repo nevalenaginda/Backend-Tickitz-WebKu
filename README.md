@@ -3,19 +3,23 @@
   <a href="https://tickitz-apps.netlify.app" target="_blank"><img src="https://i.ibb.co/tzSzq4x/Tickitz-2.png" alt="Tickitz-2" border="0" /></a>
 </p>
 
-### 🧐 Deskripsi
+### 🧐 Description
 
-Tickitz merupakan aplikasi web yang dibangun menggunakan Reactjs di sisi frontend, serta Nodejs dan Expressjs di sisi backend. Website ini berfungsi untuk memesan tiket film secara online sehingga mudah digunakan oleh user mobile dan desktop.
+Tickitz is a web application built using Reactjs on the frontend side, and Nodejs and Expressjs on the backend side. This website is used to order movie tickets online, so that it is easy to use by mobile and desktop users.
 
+### 💻 Features
 
-### 💻 Fitur
+- JWT authentication
 
-- Authentikasi dengan JWT
-- Multilevel Authorisasi
-- Verifikasi Email
-- Unggah Gambar
-- Redis
-- CRUD Untuk Semua Tabel Pada Database
+- Multilevel authorization
+
+- Nodemailer for email verification
+
+- Upload image using multer
+
+- Redis server
+
+- CRUD for all tables required in the application
 
 
 ### ⛏️ Modules
@@ -38,8 +42,6 @@ Tickitz merupakan aplikasi web yang dibangun menggunakan Reactjs di sisi fronten
 2. [ESLint]
 
 ---
-
-[sebelumnya]: https://github.com/nevalenaginda/Backend-Tickitz-WebKu/tree/master
 [expressjs]: https://www.npmjs.com/package/express
 [mysql2]: https://www.npmjs.com/package/mysql2
 [dotenv]: https://www.npmjs.com/package/dotenv
@@ -55,13 +57,24 @@ Tickitz merupakan aplikasi web yang dibangun menggunakan Reactjs di sisi fronten
 [multer]: https://www.npmjs.com/package/multer
 [nodemailer]: https://www.npmjs.com/package/nodemailer
 
-### 💻  Persiapan
+## Installation
 
-1. Buka terminal atau command prompt. Kemudian, clone repositori ini dengan perintah `git clone https://github.com/nevalenaginda/Backend-Tickitz-WebKu.git`.
-2. Silahkan buka file ini dalam satu folder di text editor seperti VS Code atau sejenisnya
-3. Pastikan import database yang ada didalam folder `database file` sebagai database di MySql
-4. Pastikan isi `PORT` yang akan kamu gunakan di file `.env` sesuaikan juga dengan yang ada di `app.listen` pada file `app.js`
-5. Silahkan ganti nama database, user dan password pada file `.env` sesuai dengan MySql kalian. Susunannya seperti berikut:
+1. Clone the repository
+
+```
+git clone https://github.com/nevalenaginda/Backend-Tickitz-WebKu.git
+cd Backend-Tickitz-WebKu
+```
+
+2. Install package
+
+```
+npm install
+```
+
+3. Create a new database with a name `tickitz_webku` and import `tickitz_webku.sql` from this repository
+
+4. Create .env file
 
 ```
 PORT   = 
@@ -77,27 +90,19 @@ URL_BACKEND = (Ex http://localhost:5000/v1)
 PASSWORD = 
 ```
 
-Untuk pengguna OS windows biasanya bagian passowrd di xampp itu kosong
-
-### 💻 Penggunaan
-
-Silahkan buka terminal pada VS Code dengan menekan tombol
+5. Run application
 
 ```
-CTRL + SHIFT + `
-atau
-CTRL + SHIFT + C
+npm run dev
 ```
 
-Kemudian ketikan text berikut
+Or
 
 ```
-"npm run start" //untuk menjalankan nodemon cek di file package.json
+npm start
 ```
 
-Sebelum menjalankan project ini pastikan telah mengaktifkan module Apacahe dan MySql di XAMPP
-
-### 💭 Dokumentasi API
+### 💭 API Documentation 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://documenter.getpostman.com/view/13256965/TzXukecS)
 
 

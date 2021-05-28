@@ -55,19 +55,26 @@ Tickitz Web-Ku merupakan aplikasi web yang dibangun menggunakan Reactjs di sisi 
 [multer]: https://www.npmjs.com/package/multer
 [nodemailer]: https://www.npmjs.com/package/nodemailer
 
-### Tatacara
+### Persiapan
 
-1. Silahkan download file ini.
+1. Buka terminal atau command prompt. Kemudian, clone repositori ini dengan perintah git clone https://github.com/nevalenaginda/Backend-Tickitz-WebKu.git.
 2. Silahkan buka file ini dalam satu folder di text editor seperti VS Code atau sejenisnya
 3. Pastikan import database yang ada didalam folder `database file` sebagai database di MySql
-4. Patikan isi `PORT` yang akan kamu gunakan di file `.env` sesuaikan juga dengan yang ada di `app.listen` pada file `app.js`
-5. Silahkan ganti nama database, user dan password pada file `.env` sesuai dengan MySql kalian. Umumnya seperti berikut:
+4. Pastikan isi `PORT` yang akan kamu gunakan di file `.env` sesuaikan juga dengan yang ada di `app.listen` pada file `app.js`
+5. Silahkan ganti nama database, user dan password pada file `.env` sesuai dengan MySql kalian. Susunannya seperti berikut:
 
 ```
-DBHOST= localhost
-DBUSER= root
-DBPASS=
-DB    = nama_databasenya
+PORT   = 
+JWTCode = 
+DBHOST = 
+DBUSER = 
+DBPASS = 
+DB     = 
+EMAIL = 
+URL_IMAGE =   (Ex http://localhost:5000/img)
+URL_FRONTEND = 
+URL_BACKEND = (Ex http://localhost:5000/v1)
+PASSWORD = 
 ```
 
 Untuk pengguna OS windows biasanya bagian passowrd di xampp itu kosong

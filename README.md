@@ -57,7 +57,7 @@ Tickitz Web-Ku merupakan aplikasi web yang dibangun menggunakan Reactjs di sisi 
 
 ### Persiapan
 
-1. Buka terminal atau command prompt. Kemudian, clone repositori ini dengan perintah git clone https://github.com/nevalenaginda/Backend-Tickitz-WebKu.git.
+1. Buka terminal atau command prompt. Kemudian, clone repositori ini dengan perintah `git clone https://github.com/nevalenaginda/Backend-Tickitz-WebKu.git`.
 2. Silahkan buka file ini dalam satu folder di text editor seperti VS Code atau sejenisnya
 3. Pastikan import database yang ada didalam folder `database file` sebagai database di MySql
 4. Pastikan isi `PORT` yang akan kamu gunakan di file `.env` sesuaikan juga dengan yang ada di `app.listen` pada file `app.js`

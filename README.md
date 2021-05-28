@@ -3,9 +3,9 @@
   <a href="https://tickitz-apps.netlify.app" target="_blank"><img src="https://i.ibb.co/tzSzq4x/Tickitz-2.png" alt="Tickitz-2" border="0" /></a>
 </p>
 
-### Informasi
+### Deskripsi
 
-Tickitz Web-Ku merupakan aplikasi web yang dibangun menggunakan Reactjs di sisi frontend, serta Nodejs dan Expressjs di sisi backend. Website ini berfungsi untuk memesan tiket film secara online sehingga mudah digunakan oleh user mobile dan desktop.
+Tickitz merupakan aplikasi web yang dibangun menggunakan Reactjs di sisi frontend, serta Nodejs dan Expressjs di sisi backend. Website ini berfungsi untuk memesan tiket film secara online sehingga mudah digunakan oleh user mobile dan desktop.
 
 
 ### Fitur
@@ -98,7 +98,7 @@ Kemudian ketikan text berikut
 Sebelum menjalankan project ini pastikan telah mengaktifkan module Apacahe dan MySql di XAMPP
 
 ### Dokumentasi API
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://documenter.getpostman.com/view/13256965/TzRLkqi4)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://documenter.getpostman.com/view/13256965/TzXukecS)
 
 
 ### Link:

@@ -3,12 +3,12 @@
   <a href="https://tickitz-apps.netlify.app" target="_blank"><img src="https://i.ibb.co/tzSzq4x/Tickitz-2.png" alt="Tickitz-2" border="0" /></a>
 </p>
 
-### Deskripsi
+### 🧐 Deskripsi
 
 Tickitz merupakan aplikasi web yang dibangun menggunakan Reactjs di sisi frontend, serta Nodejs dan Expressjs di sisi backend. Website ini berfungsi untuk memesan tiket film secara online sehingga mudah digunakan oleh user mobile dan desktop.
 
 
-### Fitur
+### 💻 Fitur
 
 - Authentikasi dengan JWT
 - Multilevel Authorisasi
@@ -18,7 +18,7 @@ Tickitz merupakan aplikasi web yang dibangun menggunakan Reactjs di sisi fronten
 - CRUD Untuk Semua Tabel Pada Database
 
 
-### Modules
+### ⛏️ Modules
 
 1. [Expressjs]
 2. [MySql2]
@@ -32,7 +32,7 @@ Tickitz merupakan aplikasi web yang dibangun menggunakan Reactjs di sisi fronten
 10. [multer]
 11. [nodemailer]
 
-### Dev Modules
+### ⛏️ Dev Modules
 
 1. [Nodemon]
 2. [ESLint]
@@ -55,7 +55,7 @@ Tickitz merupakan aplikasi web yang dibangun menggunakan Reactjs di sisi fronten
 [multer]: https://www.npmjs.com/package/multer
 [nodemailer]: https://www.npmjs.com/package/nodemailer
 
-### Persiapan
+### 💻  Persiapan
 
 1. Buka terminal atau command prompt. Kemudian, clone repositori ini dengan perintah `git clone https://github.com/nevalenaginda/Backend-Tickitz-WebKu.git`.
 2. Silahkan buka file ini dalam satu folder di text editor seperti VS Code atau sejenisnya
@@ -79,7 +79,7 @@ PASSWORD =
 
 Untuk pengguna OS windows biasanya bagian passowrd di xampp itu kosong
 
-### Penggunaan
+### 💻 Penggunaan
 
 Silahkan buka terminal pada VS Code dengan menekan tombol
 
@@ -97,10 +97,10 @@ Kemudian ketikan text berikut
 
 Sebelum menjalankan project ini pastikan telah mengaktifkan module Apacahe dan MySql di XAMPP
 
-### Dokumentasi API
+### 💭 Dokumentasi API
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://documenter.getpostman.com/view/13256965/TzXukecS)
 
 
-### Link:
+### ✍️ Link:
 - :white_check_mark: [Frontend](https://github.com/nevalenaginda/Frontend-Tickitz-WebKu)
 - :rocket: [Deploy](https://tickitz-apps.netlify.app)

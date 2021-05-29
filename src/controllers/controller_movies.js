@@ -287,7 +287,7 @@ const controllerGetMovieById = (req, res) => {
     .then((result) => {
       if (result.length > 0) {
         result[0].image = `${envURLImage}/${result[0].image}`;
-        return response(res, result, {}, 200, {
+        return response(res, result[0], {}, 200, {
           message: `Success get data movie with id ${idMovie}`,
           error: null,
         });
@@ -321,14 +321,16 @@ const controllerUpdateMovie = async (req, res) => {
         data.image = `${req.file.filename}`;
         // let delImage = last_image[0].image.split("/").slice(-1)[0];
         if (last_image[0].image !== "default_poster.jpg") {
-          const locationPath = "./src/uploads/" + last_image[0].image;
-          fs.unlinkSync(locationPath);
+          const path = "./src/uploads/" + last_image[0].image;
+          if (fs.existsSync(path)) {
+            fs.unlinkSync(path);
+          }
           modelUpdateDataMovie(idMovie, data)
             .then((result) => {
               setDataRedis();
               data.image = `${envURLImage}/${data.image}`;
               return response(res, [data], {}, 200, {
-                message: `Succes update data movie with id ${idMovie}`,
+                message: `Succes update data movie`,
                 error: null,
               });
             })
@@ -345,7 +347,7 @@ const controllerUpdateMovie = async (req, res) => {
               setDataRedis();
               data.image = `${envURLImage}/${data.image}`;
               return response(res, [data], {}, 200, {
-                message: `Succes update data movie with id ${idMovie}`,
+                message: `Succes update data movie`,
                 error: null,
               });
             })
@@ -358,12 +360,13 @@ const controllerUpdateMovie = async (req, res) => {
             });
         }
       } else {
+        data.image = last_image[0].image;
         modelUpdateDataMovie(idMovie, data)
           .then((result) => {
             setDataRedis();
             data.image = `${envURLImage}/${data.image}`;
             return response(res, [data], {}, 200, {
-              message: `Succes update data movie with id ${idMovie}`,
+              message: `Succes update data movie`,
               error: null,
             });
           })
@@ -397,10 +400,12 @@ const controllerDeleteMovie = async (req, res) => {
     const checkIdMovie = await modelCheckIdMovie(idMovie);
     if (checkIdMovie.length !== 0) {
       const last_image = await modelGetMovieById(idMovie);
-      let delImage = last_image[0].image.split("/").slice(-1)[0];
+      let delImage = last_image[0].image;
       if (delImage !== "default_poster.jpg") {
-        const locationPath = "./src/uploads/" + delImage;
-        fs.unlinkSync(locationPath);
+        const path = "./src/uploads/" + delImage;
+        if (fs.existsSync(path)) {
+          fs.unlinkSync(path);
+        }
         modelDeleteMovie(idMovie)
           .then((result) => {
             setDataRedis();

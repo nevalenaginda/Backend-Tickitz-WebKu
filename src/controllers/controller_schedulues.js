@@ -9,7 +9,7 @@ const {
   modelGetAllDetailSchedules,
   modelReadTotalDetailSchedules,
 } = require("../models/model_schedules");
-
+const { envURLImage } = require("../helpers/env");
 const { response } = require("../helpers/response");
 const redis = require("redis");
 const client = redis.createClient(6379);
@@ -17,7 +17,7 @@ const client = redis.createClient(6379);
 // create
 const controllerInsertSchedule = async (req, res) => {
   const { id_movie, id_cinema, playing_time, playing_date, price } = req.body;
-
+  console.log(req.body);
   if (!id_movie || !id_cinema || !playing_time || !playing_date || !price) {
     return response(res, [], {}, 401, {
       message: "Failed to  add data schedule. All data cannot be empty.",
@@ -221,22 +221,22 @@ const controllerGetAllDetailSchedules = async (req, res) => {
   //filter
   const city = req.query.city;
   const date = req.query.date;
-  const movie = req.query.movie;
+  const id_movie = req.query.id_movie;
   let search = "";
-  if (city && date && movie) {
-    search = `WHERE tb_cinemas.city_cinema = '${city}' AND tb_schedule_movies.playing_date = '${date}' AND tb_movies.movie_title  LIKE '%${movie}%'`;
+  if (city && date && id_movie) {
+    search = `WHERE tb_cinemas.city_cinema = '${city}' AND tb_schedule_movies.playing_date = '${date}' AND tb_movies.id_movie  LIKE '%${id_movie}%'`;
   } else if (city && date) {
     search = `WHERE tb_cinemas.city_cinema = '${city}' AND tb_schedule_movies.playing_date = '${date}'`;
-  } else if (city && movie) {
-    search = `WHERE tb_cinemas.city_cinema = '${city}' AND tb_movies.movie_title  LIKE '%${movie}%'`;
-  } else if (date && movie) {
-    search = `WHERE tb_schedule_movies.playing_date = '${date}' AND tb_movies.movie_title  LIKE '%${movie}%'`;
+  } else if (city && id_movie) {
+    search = `WHERE tb_cinemas.city_cinema = '${city}' AND tb_movies.id_movie LIKE '%${id_movie}%'`;
+  } else if (date && id_movie) {
+    search = `WHERE tb_schedule_movies.playing_date = '${date}' AND tb_movies.id_movie LIKE '%${id_movie}%'`;
   } else if (city) {
     search = `WHERE tb_cinemas.city_cinema = '${city}'`;
   } else if (date) {
     search = `WHERE tb_schedule_movies.playing_date = '${date}'`;
-  } else if (movie) {
-    search = `WHERE tb_movies.movie_title  LIKE '%${movie}%'`;
+  } else if (id_movie) {
+    search = `WHERE tb_movies.id_movie  LIKE '%${id_movie}%'`;
   } else {
     search = ``;
   }
@@ -252,6 +252,9 @@ const controllerGetAllDetailSchedules = async (req, res) => {
   modelGetAllDetailSchedules(search, data, pages)
     .then((result) => {
       if (result.length > 0) {
+        result.map((item, index) => {
+          result[index].logo_cinema = `${envURLImage}/${item.logo_cinema}`;
+        });
         const pagination = {
           page: page,
           limit: limit,

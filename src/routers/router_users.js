@@ -17,17 +17,21 @@ const {
   controllerLogin,
   controllerActivation,
   controllerGetProfile,
+  controllerForgotPassword,
+  controllerResetPassword,
 } = require("../controllers/controller_users");
 
 Route.post("/register", controllerAddUser)
   .post("/login", controllerLogin)
+  .post("/forgotPassword", controllerForgotPassword)
+  .get("/resetPassword/:token/:email/:password", controllerResetPassword)
   .get("/activate/:token/:email", controllerActivation)
   .get("/profile", authentification, controllerGetProfile)
   .get("/", authentification, controllerGetAllUsers)
   .get("/:userId", authentification, controllerGetUserById)
   .put("/:userId", authentification, controllerUpdateDataUser)
   .patch(
-    "/:userId",
+    "/update/:userId",
     authentification,
     singleUploadimg,
     controllerUpdateDataUser2

@@ -115,7 +115,7 @@ const modelDeleteSchedule = (idSchedule) => {
 const modelGetAllDetailSchedules = (search, order, pages) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT tb_schedule_movies.id_schedule, tb_schedule_movies.id_movie, tb_schedule_movies.id_cinema, tb_schedule_movies.playing_time, tb_schedule_movies.playing_date, tb_movies.movie_title, tb_movies.image, tb_movies.synopsis, tb_movies.genre, tb_movies.duration_minutes, tb_movies.duration_hours, tb_movies.casts, tb_movies.director, tb_movies.release_date, tb_cinemas.cinema_name, tb_cinemas.logo_cinema, tb_cinemas.address_cinema, tb_cinemas.city_cinema FROM tb_schedule_movies LEFT JOIN tb_movies ON tb_schedule_movies.id_movie = tb_movies.id_movie LEFT JOIN tb_cinemas ON tb_cinemas.id_cinema = tb_schedule_movies.id_cinema ${search} ${order} ${pages}`,
+      `SELECT tb_schedule_movies.id_schedule, tb_schedule_movies.id_movie, tb_schedule_movies.price, tb_schedule_movies.id_cinema, tb_schedule_movies.playing_time, tb_schedule_movies.playing_date, tb_movies.movie_title, tb_movies.image, tb_movies.synopsis, tb_movies.genre, tb_movies.duration_minutes, tb_movies.duration_hours, tb_movies.casts, tb_movies.director, tb_movies.release_date, tb_cinemas.cinema_name, tb_cinemas.logo_cinema, tb_cinemas.address_cinema, tb_cinemas.city_cinema FROM tb_schedule_movies LEFT JOIN tb_movies ON tb_schedule_movies.id_movie = tb_movies.id_movie LEFT JOIN tb_cinemas ON tb_cinemas.id_cinema = tb_schedule_movies.id_cinema ${search} ${order} ${pages}`,
       (err, results) => {
         if (!err) {
           resolve(results);

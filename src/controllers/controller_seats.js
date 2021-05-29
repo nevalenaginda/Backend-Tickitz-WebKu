@@ -6,21 +6,16 @@ const {
   modelUpdateDataSeat,
   modelCheckIdSeat,
   modelDeleteSeat,
+  modelGetSeatByIdSchedule,
 } = require("../models/model_seats");
 const { response } = require("../helpers/response");
 
 // create
 const controllerAddSeat = async (req, res) => {
-  const {
-    id_schedule,
-    id_transaction,
-    id_cinema,
-    seat_row,
-    seat_col,
-  } = req.body;
+  const { id_schedule, id_transaction, id_cinema, seat } = req.body;
   console.log(req.body);
 
-  if (!id_schedule || !id_transaction || !id_cinema || !seat_row || !seat_col) {
+  if (!id_schedule || !id_transaction || !id_cinema || !seat) {
     // res, data, pagination, status, message
     return response(res, [], {}, 401, {
       message: "Failed to  add data seat. All data cannot be empty.",
@@ -31,8 +26,7 @@ const controllerAddSeat = async (req, res) => {
       id_schedule,
       id_transaction,
       id_cinema,
-      seat_row,
-      seat_col,
+      seat,
       created_at: new Date(),
       updated_at: new Date(),
     };
@@ -117,14 +111,14 @@ const controllerGetAllSeats = async (req, res) => {
   }
 };
 
-// Read Seat by id ticket
+// Read Seat by id seat
 const controllerGetSeatById = (req, res) => {
   const idSeat = req.params.idSeat;
   modelGetSeatById(idSeat)
     .then((result) => {
       if (result.length > 0) {
         // res, data, pagination, status, message
-        return response(res, result, {}, 200, {
+        return response(res, result[0], {}, 200, {
           message: `Success get data seat with id ${idSeat}`,
           error: null,
         });
@@ -144,7 +138,35 @@ const controllerGetSeatById = (req, res) => {
     });
 };
 
-// Update movie
+//get seat by id schedule
+// Read Seat by id seat
+const controllerGetSeatBySchedule = (req, res) => {
+  const idSchedule = req.params.idSchedule;
+  modelGetSeatByIdSchedule(idSchedule)
+    .then((result) => {
+      if (result.length > 0) {
+        // res, data, pagination, status, message
+        return response(res, result, {}, 200, {
+          message: `Success get data seat`,
+          error: null,
+        });
+      } else {
+        return response(res, [], {}, 404, {
+          message: "Oops, data not found!",
+          error: null,
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err.message);
+      return response(res, [], {}, 500, {
+        message: "Internal server error!",
+        error: err.message,
+      });
+    });
+};
+
+// Update seat
 const controllerUpdateSeat = async (req, res) => {
   const idSeat = req.params.idSeat;
   try {
@@ -223,4 +245,5 @@ module.exports = {
   controllerGetSeatById,
   controllerUpdateSeat,
   controllerDeleteSeat,
+  controllerGetSeatBySchedule,
 };

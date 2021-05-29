@@ -1,5 +1,10 @@
 const multer = require("multer");
-const { large, notAcceptable, failed } = require("../helpers/response");
+const {
+  large,
+  notAcceptable,
+  failed,
+  response,
+} = require("../helpers/response");
 const path = require("path");
 const limitFile = 2;
 
@@ -51,14 +56,21 @@ const singleUploadimg = (req, res, next) => {
       if (error) {
         // console.log(error)
         if (error.code === "LIMIT_FILE_SIZE") {
-          return large(res, `File size exceeds the ${limitFile} Mb limit`);
+          return response(res, [], {}, 413, {
+            message: `File size exceeds the ${limitFile} Mb limit`,
+            error: error.message,
+          });
         } else if (error.code === "typeExtWrong") {
-          return notAcceptable(
-            res,
-            "Wrong type extention! Please upload file  png/PNG/jpg/JPG."
-          );
+          return response(res, [], {}, 406, {
+            message:
+              "Wrong type extention! Please upload file  png/PNG/jpg/JPG.",
+            error: error.message,
+          });
         } else {
-          return failed(res, "Internal server error!", []);
+          return response(res, [], {}, 500, {
+            message: "Internal server error!.",
+            error: error.message,
+          });
         }
       } else {
         next();

@@ -13,8 +13,6 @@ const { response } = require("../helpers/response");
 // Create transaction
 const controllerAddTransaction = async (req, res) => {
   const {
-    id_ticket,
-    id_movie,
     id_user,
     id_schedule,
     total_payment,
@@ -23,8 +21,6 @@ const controllerAddTransaction = async (req, res) => {
   } = req.body;
 
   if (
-    !id_ticket ||
-    !id_movie ||
     !id_user ||
     !id_schedule ||
     !total_payment ||
@@ -37,8 +33,6 @@ const controllerAddTransaction = async (req, res) => {
     });
   } else {
     const data = {
-      id_ticket,
-      id_movie,
       id_user,
       id_schedule,
       total_payment,
@@ -49,7 +43,7 @@ const controllerAddTransaction = async (req, res) => {
     };
     modelAddTransaction(data)
       .then((result) => {
-        return response(res, [data], {}, 201, {
+        return response(res, result, {}, 201, {
           message: "Success add transaction.",
           error: null,
         });
@@ -132,7 +126,7 @@ const controllerGetTransactionById = (req, res) => {
   modelGetTransactionById(idTransaction)
     .then((result) => {
       if (result.length > 0) {
-        return response(res, result, {}, 200, {
+        return response(res, result[0], {}, 200, {
           message: `Success get data transaction with id ${idTransaction}`,
           error: null,
         });

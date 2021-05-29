@@ -6,27 +6,22 @@ const {
   modelGetAllTickets,
   modelReadTotalTickets,
   modelCheckIdTicket,
+  modelGetDetailTickets,
+  modelGetAllDetailTickets,
 } = require("../models/model_tickets");
 
 const { response } = require("../helpers/response");
 
 // Insert Ticket
 const controllerInsertTicket = async (req, res) => {
-  const {
-    id_schedule,
-    id_user,
-    id_transaction,
-    id_cinema,
-    id_seat,
-    ticket_status,
-  } = req.body;
+  const { id_schedule, id_user, id_transaction, ordered_seat, ticket_status } =
+    req.body;
 
   if (
     !id_schedule ||
     !id_user ||
     !id_transaction ||
-    !id_cinema ||
-    !id_seat ||
+    !ordered_seat ||
     !ticket_status
   ) {
     return response(res, [], {}, 401, {
@@ -38,8 +33,7 @@ const controllerInsertTicket = async (req, res) => {
       id_schedule,
       id_user,
       id_transaction,
-      id_cinema,
-      id_seat,
+      ordered_seat,
       ticket_status,
       created_at: new Date(),
       updated_at: new Date(),
@@ -48,7 +42,7 @@ const controllerInsertTicket = async (req, res) => {
     modelInsertTicket(data)
       .then((result) => {
         console.log("Success insert ticket");
-        return response(res, [data], {}, 201, {
+        return response(res, result, {}, 201, {
           message: "Success insert ticket.",
           error: null,
         });
@@ -149,6 +143,59 @@ const controllerGetTicketById = (req, res) => {
     });
 };
 
+// Get ticket by id
+const controllerGetDetailTicketById = (req, res) => {
+  const idTicket = req.params.idTicket;
+  modelGetDetailTickets(idTicket)
+    .then((result) => {
+      if (result.length > 0) {
+        return response(res, result[0], {}, 200, {
+          message: `Success get one data ticket`,
+          error: null,
+        });
+      } else {
+        return response(res, [], {}, 404, {
+          message: "Oops, data not found!",
+          error: null,
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err.message);
+      return response(res, [], {}, 500, {
+        message: "Internal server error!",
+        error: err.message,
+      });
+    });
+};
+
+// Get ticket by id
+const controllerGetAllDetailTicketById = (req, res) => {
+  const idUser = req.params.idUser;
+  console.log(idUser);
+  modelGetAllDetailTickets(idUser)
+    .then((result) => {
+      if (result.length > 0) {
+        return response(res, result, {}, 200, {
+          message: `Success get data ticket`,
+          error: null,
+        });
+      } else {
+        return response(res, [], {}, 404, {
+          message: "Oops, data not found!",
+          error: null,
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err.message);
+      return response(res, [], {}, 500, {
+        message: "Internal server error!",
+        error: err.message,
+      });
+    });
+};
+
 // Update ticket
 const controllerUpdateTicket = async (req, res) => {
   const idTicket = req.params.idTicket;
@@ -228,4 +275,6 @@ module.exports = {
   controllerUpdateTicket,
   controllerInsertTicket,
   controllerDeleteTicket,
+  controllerGetAllDetailTicketById,
+  controllerGetDetailTicketById,
 };

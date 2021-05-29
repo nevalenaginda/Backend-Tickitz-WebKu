@@ -1,13 +1,9 @@
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
-const {
-  envPORT,
-  envJWT,
-  envURLFrontEnd,
-  envURLImage,
-} = require("../helpers/env");
-const { sendEmail } = require("../helpers/email");
+const { envJWT, envURLFrontEnd, envURLImage } = require("../helpers/env");
+const mailer = require("../helpers/email");
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
 
 const {
   modelAddUser,
@@ -46,6 +42,7 @@ const controllerAddUser = async (req, res) => {
           id_user: uuidv4(),
           email: email.toLowerCase(),
           password,
+          profil_image: "default.png",
           created_at: new Date(),
           updated_at: new Date(),
         };
@@ -54,7 +51,8 @@ const controllerAddUser = async (req, res) => {
           .then((result) => {
             createActivation(data.email, token)
               .then((result) => {
-                sendEmail(data.email, token)
+                mailer
+                  .register(data.email, token)
                   .then((result) => {
                     return response(res, [], {}, 200, {
                       message:
@@ -133,13 +131,16 @@ const controllerLogin = async (req, res) => {
             const token = jwt.sign(
               dataUser,
               envJWT,
-              { expiresIn: "12h" },
+              // { expiresIn: "24h" },
               (err, token) => {
                 const allData = {
                   id_user: checkEmail[0].id_user,
                   access: checkEmail[0].access,
                   profil_image: `${envURLImage}/${checkEmail[0].profil_image}`,
                   email: checkEmail[0].email,
+                  first_name: checkEmail[0].first_name,
+                  last_name: checkEmail[0].last_name,
+                  phone_number: checkEmail[0].phone_number,
                   token,
                 };
                 return response(res, allData, {}, 200, {
@@ -264,14 +265,8 @@ const controllerGetUserById = (req, res) => {
 // update
 const controllerUpdateDataUser = async (req, res) => {
   const userId = req.params.userId;
-  const {
-    first_name,
-    last_name,
-    email,
-    password,
-    profil_image,
-    phone_number,
-  } = req.body;
+  const { first_name, last_name, email, password, profil_image, phone_number } =
+    req.body;
   if (
     !first_name ||
     !last_name ||
@@ -330,44 +325,86 @@ const controllerUpdateDataUser = async (req, res) => {
 
 // update
 const controllerUpdateDataUser2 = async (req, res) => {
+  console.log("masuk sini", req.params.userId);
   const userId = req.params.userId;
   const data = req.body;
   try {
-    const checkIdUser = await modelCheckIdUser(userId);
+    const checkIdUser = await modelGetUserById(userId);
+    console.log(checkIdUser);
     if (checkIdUser.length === 0) {
       return response(res, [], {}, 404, {
         message: "There are no user with this id",
         error: null,
       });
     } else {
-      const last_profile = await modelGetUserById(userId);
-      data.profil_image = req.file
-        ? `${req.file.filename}`
-        : last_profile[0].profil_image;
-      modelUpdateDataUser(userId, data)
-        .then((result) => {
-          data.profil_image = `${envURLImage}/${data.profil_image}`;
-          return response(res, [data], {}, 200, {
-            message: "Succes update data user",
-            error: null,
+      if (req.file) {
+        if (checkIdUser[0].profil_image === "default.png") {
+          data.profil_image = req.file.filename;
+          modelUpdateDataUser(userId, data)
+            .then((result) => {
+              return response(res, {}, {}, 200, {
+                message: "Succes update data user",
+                error: null,
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+              return response(res, [], {}, 500, {
+                message: "Internal server error!",
+                error: err.message,
+              });
+            });
+        } else {
+          data.profil_image = req.file.filename;
+          console.log(
+            "ini alamat filenya",
+            `./src/uploads/${checkIdUser[0].profil_image}`
+          );
+          const path = `./src/uploads/${checkIdUser[0].profil_image}`;
+          if (fs.existsSync(path)) {
+            fs.unlinkSync(path);
+          }
+          modelUpdateDataUser(userId, data)
+            .then((result) => {
+              return response(res, {}, {}, 200, {
+                message: "Succes update data user",
+                error: null,
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+              return response(res, [], {}, 500, {
+                message: "Internal server error!",
+                error: err.message,
+              });
+            });
+        }
+      } else {
+        modelUpdateDataUser(userId, data)
+          .then((result) => {
+            return response(res, {}, {}, 200, {
+              message: "Succes update data user",
+              error: null,
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            return response(res, [], {}, 500, {
+              message: "Internal server error!",
+              error: err.message,
+            });
           });
-        })
-        .catch((err) => {
-          console.log(err.message);
-          return response(res, [], {}, 500, {
-            message: "Internal server error!",
-            error: err.message,
-          });
-        });
+      }
     }
   } catch (err) {
-    console.log(err.message);
+    console.log(err);
     return response(res, [], {}, 500, {
       message: "Internal server error!",
       error: err.message,
     });
   }
 };
+
 // Delete User
 const controllerDeleteUser = async (req, res) => {
   const userId = req.params.userId;
@@ -407,14 +444,8 @@ const controllerGetProfile = (req, res) => {
   const email = req.email;
   modelCheckEmail(email)
     .then((result) => {
-      const data = {
-        id_user: result[0].id_user,
-        profil_image: `${envURLImage}/${result[0].profil_image}`,
-        access: result[0].access,
-        token,
-        email,
-      };
-      return response(res, data, {}, 200, {
+      result[0].profil_image = `${envURLImage}/${result[0].profil_image}`;
+      return response(res, result[0], {}, 200, {
         message: "Succes get profile",
         error: null,
       });
@@ -428,35 +459,182 @@ const controllerGetProfile = (req, res) => {
 };
 
 const controllerActivation = (req, res) => {
-  getActivation(req.params.token, req.params.email)
-    .then((result) => {
-      const id_activation = result[0].id;
-      setActivationUser(req.params.email)
-        .then((result) => {
-          deleteActivation(id_activation)
-            .then((result) => {
-              return res.status(301).redirect(`${envURLFrontEnd}`);
-            })
-            .catch((err) => {
-              return response(res, [], {}, 500, {
-                message: "Internal server error!",
-                error: err.message,
+  if (!req.params.token || !req.params.email) {
+    return response(res, [], {}, 401, {
+      message: "Failed Activate. All data cannot be empty.",
+      error: null,
+    });
+  } else {
+    getActivation(req.params.token, req.params.email)
+      .then((result) => {
+        const id_activation = result[0].id;
+        setActivationUser(req.params.email)
+          .then((result) => {
+            deleteActivation(id_activation)
+              .then((result) => {
+                return response(res, [], {}, 200, {
+                  message: "Activated",
+                  error: null,
+                });
+              })
+              .catch((err) => {
+                return response(res, [], {}, 500, {
+                  message: "Internal server error!",
+                  error: err.message,
+                });
               });
+          })
+          .catch((err) => {
+            return response(res, [], {}, 500, {
+              message: "Internal server error!",
+              error: err.message,
             });
-        })
-        .catch((err) => {
-          return response(res, [], {}, 500, {
-            message: "Internal server error!",
-            error: err.message,
           });
+      })
+      .catch((err) => {
+        return response(res, [], {}, 500, {
+          message: "Internal server error!",
+          error: err.message,
         });
-    })
-    .catch((err) => {
+      });
+  }
+};
+
+const controllerForgotPassword = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return response(res, [], {}, 401, {
+      message: "Failed to reset password. Email cannot be empty",
+      error: null,
+    });
+  } else {
+    try {
+      const checkEmail = await modelCheckEmail(email.toLowerCase());
+      if (checkEmail.length > 0) {
+        const data = {
+          email: checkEmail[0].email,
+          first_name: checkEmail[0].first_name,
+          last_name: checkEmail[0].last_name,
+        };
+        const token = jwt.sign({ identify: data }, envJWT);
+        createActivation(data.email, token)
+          .then((result) => {
+            mailer
+              .forgotPassword(data.email, checkEmail[0].first_name, token)
+              .then((result) => {
+                return response(res, [], {}, 200, {
+                  message: "Please check your email to reset your password",
+                  error: null,
+                });
+              })
+              .catch((err) => {
+                return response(res, [], {}, 500, {
+                  message: "Internal server error",
+                  error: err.message,
+                });
+              });
+          })
+          .catch((err) => {
+            return response(res, [], {}, 500, {
+              message: "Internal server error",
+              error: err.message,
+            });
+          });
+      } else {
+        return response(res, [], {}, 401, {
+          message: "Email is not registered or activated!",
+          error: null,
+        });
+      }
+    } catch (err) {
+      console.log(err.message);
       return response(res, [], {}, 500, {
-        message: "Internal server error!",
+        message: "Internal server error",
         error: err.message,
       });
+    }
+  }
+};
+
+const controllerResetPassword = (req, res) => {
+  if (!req.params.token || !req.params.email || !req.params.password) {
+    return response(res, [], {}, 401, {
+      message: "Fill all requested field for reset password!",
+      error: null,
     });
+  } else {
+    getActivation(req.params.token, req.params.email)
+      .then((res1) => {
+        if (res1.length < 1) {
+          return response(res, [], {}, 401, {
+            message: "Invalid Token!",
+            error: null,
+          });
+        }
+        {
+          modelCheckEmail(req.params.email)
+            .then((responseEmail) => {
+              if (responseEmail.length < 1) {
+                return response(res, [], {}, 500, {
+                  message: "Email is not registered or activated!",
+                  error: null,
+                });
+              } else {
+                deleteActivation(res1[0].id)
+                  .then(async () => {
+                    console.log("ini new password", req.params.password);
+                    console.log("ini new password", req.params.password);
+                    console.log("ini data yang mau diubah", responseEmail);
+                    const salt = await bcrypt.genSalt(10);
+                    const password = await bcrypt.hash(
+                      req.params.password,
+                      salt
+                    );
+                    const data = {
+                      password,
+                    };
+
+                    modelUpdateDataUser(responseEmail[0].id_user, data)
+                      .then((res2) => {
+                        return response(res, [], {}, 201, {
+                          message: "Success reset password",
+                          error: null,
+                        });
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                        return response(res, [], {}, 500, {
+                          message: "Internal Server Error",
+                          error: err,
+                        });
+                      });
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    return response(res, [], {}, 500, {
+                      message: "Internal Server Error",
+                      error: err,
+                    });
+                  });
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+              return response(res, [], {}, 500, {
+                message: "Internal Server Error",
+                error: err,
+              });
+            });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        return response(res, [], {}, 500, {
+          message: "Internal Server Error",
+          error: err,
+        });
+      });
+  }
 };
 
 module.exports = {
@@ -469,4 +647,6 @@ module.exports = {
   controllerLogin,
   controllerGetProfile,
   controllerActivation,
+  controllerForgotPassword,
+  controllerResetPassword,
 };

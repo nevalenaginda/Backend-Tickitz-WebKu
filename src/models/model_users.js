@@ -109,6 +109,22 @@ const modelUpdateDataUser = (idUser, data) => {
   });
 };
 
+const modelChangePasswordUser = (idUser, data) => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `UPDATE tb_users SET ? WHERE id_user = '${idUser}'`,
+      [data],
+      (err, result) => {
+        if (!err) {
+          resolve(result);
+        } else {
+          reject(new Error(err));
+        }
+      }
+    );
+  });
+};
+
 const modelDeleteUser = (idUser) => {
   return new Promise((resolve, reject) => {
     connection.query(
@@ -201,4 +217,5 @@ module.exports = {
   getActivation,
   setActivationUser,
   deleteActivation,
+  modelChangePasswordUser,
 };

@@ -38,7 +38,7 @@ const controllerInsertSchedule = async (req, res) => {
       .then((result) => {
         console.log("Success insert schedule");
         return response(res, [data], {}, 201, {
-          message: "Success insert seat.",
+          message: "Success add schedule.",
           error: null,
         });
       })

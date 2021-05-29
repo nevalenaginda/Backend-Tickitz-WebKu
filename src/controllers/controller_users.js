@@ -18,6 +18,7 @@ const {
   getActivation,
   setActivationUser,
   deleteActivation,
+  modelChangePasswordUser,
 } = require("../models/model_users");
 
 const { response } = require("../helpers/response");
@@ -582,9 +583,9 @@ const controllerResetPassword = (req, res) => {
               } else {
                 deleteActivation(res1[0].id)
                   .then(async () => {
-                    console.log("ini new password", req.params.password);
-                    console.log("ini new password", req.params.password);
-                    console.log("ini data yang mau diubah", responseEmail);
+                    // console.log("ini new password", req.params.password);
+                    // console.log("ini new password", req.params.password);
+                    // console.log("ini data yang mau diubah", responseEmail);
                     const salt = await bcrypt.genSalt(10);
                     const password = await bcrypt.hash(
                       req.params.password,
@@ -594,7 +595,7 @@ const controllerResetPassword = (req, res) => {
                       password,
                     };
 
-                    modelUpdateDataUser(responseEmail[0].id_user, data)
+                    modelChangePasswordUser(responseEmail[0].id_user, data)
                       .then((res2) => {
                         return response(res, [], {}, 201, {
                           message: "Success reset password",

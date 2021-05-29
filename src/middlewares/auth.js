@@ -8,11 +8,13 @@ const authentification = (req, res, next) => {
   }
 
   let token = authorization.split(" ");
+  console.log(token);
   token = token[1];
 
   jwt.verify(token, process.env.JWTCode, (err, decode) => {
     if (err) {
       if (err.name === "JsonWebTokenError") {
+        console.log(err.name);
         return response(res, null, {}, 401, { message: "Invalid signature" });
       } else if (err.name === "TokenExpiredError") {
         return response(res, null, {}, 401, {

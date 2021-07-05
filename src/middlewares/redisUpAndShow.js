@@ -1,5 +1,5 @@
 const redis = require("redis");
-const client = redis.createClient(6379);
+const client = redis.createClient("/home/nevalena/redis.sock");
 const { response } = require("../helpers/response");
 
 const cacheUpComing = (req, res, next) => {

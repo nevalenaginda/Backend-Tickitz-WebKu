@@ -1,10 +1,28 @@
-# Intermediate Backend Week 6
+<h1 align="center">Tickitz</h1>
+<p align="center">
+  <a href="https://tickitz-apps.netlify.app" target="_blank"><img src="https://i.ibb.co/tzSzq4x/Tickitz-2.png" alt="Tickitz-2" border="0" /></a>
+</p>
 
-### Informasi
+### 🧐 Description
 
-File ini merupakan kelanjutan dari pembuatan REST API Tiket Film [sebelumnya]. Pada project ini selain sistem CRUD telah ditambahkan sistem authorisasi, authentifikasi, tokenisasi, dan aktivasi user. Berikut adalah module yang digunakan pada project ini:
+Tickitz is a web application built using Reactjs on the frontend side, and Nodejs and Expressjs on the backend side. This website is used to order movie tickets online, so that it is easy to use by mobile and desktop users.
 
-### Modules
+### 💻 Features
+
+- JWT authentication
+
+- Multilevel authorization
+
+- Nodemailer for email verification
+
+- Upload image using multer
+
+- Redis server
+
+- CRUD for all tables required in the application
+
+
+### ⛏️ Modules
 
 1. [Expressjs]
 2. [MySql2]
@@ -18,14 +36,12 @@ File ini merupakan kelanjutan dari pembuatan REST API Tiket Film [sebelumnya]. P
 10. [multer]
 11. [nodemailer]
 
-### Dev Modules
+### ⛏️ Dev Modules
 
 1. [Nodemon]
 2. [ESLint]
 
 ---
-
-[sebelumnya]: https://github.com/nevalenaginda/Backend-Tickitz-WebKu/tree/master
 [expressjs]: https://www.npmjs.com/package/express
 [mysql2]: https://www.npmjs.com/package/mysql2
 [dotenv]: https://www.npmjs.com/package/dotenv
@@ -41,55 +57,55 @@ File ini merupakan kelanjutan dari pembuatan REST API Tiket Film [sebelumnya]. P
 [multer]: https://www.npmjs.com/package/multer
 [nodemailer]: https://www.npmjs.com/package/nodemailer
 
-### Tatacara
+## Installation
 
-1. Silahkan download file ini.
-2. Silahkan buka file ini dalam satu folder di text editor seperti VS Code atau sejenisnya
-3. Pastikan import database yang ada didalam folder `database file` sebagai database di MySql
-4. Patikan isi `PORT` yang akan kamu gunakan di file `.env` sesuaikan juga dengan yang ada di `app.listen` pada file `app.js`
-5. Silahkan ganti nama database, user dan password pada file `.env` sesuai dengan MySql kalian. Umumnya seperti berikut:
+1. Clone the repository
 
 ```
-DBHOST= localhost
-DBUSER= root
-DBPASS=
-DB    = nama_databasenya
+git clone https://github.com/nevalenaginda/Backend-Tickitz-WebKu.git
+cd Backend-Tickitz-WebKu
 ```
 
-Untuk pengguna OS windows biasanya bagian passowrd di xampp itu kosong
-
-### Penggunaan
-
-Silahkan buka terminal pada VS Code dengan menekan tombol
+2. Install package
 
 ```
-CTRL + SHIFT + `
-atau
-CTRL + SHIFT + C
+npm install
 ```
 
-Kemudian ketikan text berikut
+3. Create a new database with a name `tickitz_webku` and import `tickitz_webku.sql` from this repository
+
+4. Create .env file
 
 ```
-"npm run start" //untuk menjalankan nodemon cek di file package.json
+PORT   = 
+JWTCode = 
+DBHOST = 
+DBUSER = 
+DBPASS = 
+DB     = 
+EMAIL = 
+URL_IMAGE =   (Ex http://localhost:5000/img)
+URL_FRONTEND = 
+URL_BACKEND = (Ex http://localhost:5000/v1)
+PASSWORD = 
 ```
 
-Sebelum menjalankan project ini pastikan telah mengaktifkan module Apacahe dan MySql di XAMPP
-
-### REST API SERVER
-
-Kita dapat menggunakan REST API yang dibuat dengan mengunjungi link berikut.
+5. Run application
 
 ```
-http://100.25.29.134:5000/v1/
+npm run dev
 ```
 
-Tersedia 7 endpoint yaitu:
+Or
 
-1. '/user'
-2. '/ticket',
-3. '/transaction'
-4. '/movie'
-5. '/schedule'
-6. '/cinema'
-7. '/seat'
+```
+npm start
+```
+
+### 💭 API Documentation 
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://documenter.getpostman.com/view/13256965/TzXukecS)
+
+
+### ✍️ Link:
+- :white_check_mark: [Frontend](https://github.com/nevalenaginda/Frontend-Tickitz-WebKu)
+- :rocket: [Deploy](https://tickitz-apps.netlify.app)
